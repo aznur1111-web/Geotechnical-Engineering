@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Aznur Civil Studio - Geotechnical Engineering toolbox for soil mechanics, site investigation, foundations, slopes, retaining walls, piles, earthwork and geotechnical calculations.">
+<meta name="theme-color" content="#fafafa">
+<title>Aznur Civil Studio - Geotechnical Engineering</title>
+<style>
+:root {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --surface-2: #f5f5f4;
+  --border: #e7e5e4;
+  --text: #1c1917;
+  --muted: #57534e;
+  --accent: #f59e0b;
+  --accent-hover: #d97706;
+  --success: #10b981;
+  --error: #ef4444;
+  --info: #3b82f6;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+button, input, select, textarea { font: inherit; }
+button { border: 0; }
+button:focus-visible, input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.container { max-width: 1180px; margin: 0 auto; padding: 34px 18px 60px; }
+header { margin-bottom: 22px; text-align: center; }
+h1 { margin: 0 0 8px; font-size: clamp(2rem, 4vw, 3rem); }
+.subtitle { max-width: 820px; margin: 0 auto; color: var(--muted); }
+
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.searchbox {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+}
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.card {
+  margin-bottom: 18px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.notice {
+  padding: 13px 15px;
+  margin-bottom: 18px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius);
+  color: #78350f;
+  font-size: .84rem;
+}
+.notice strong { color: #451a03; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.sidebar { position: sticky; top: 14px; }
+.category-list { display: grid; gap: 7px; max-height: 70vh; overflow: auto; }
+.category-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 11px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  color: var(--text);
+}
+.category-btn:hover { background: var(--surface-2); }
+.category-btn.on { background: #fffbeb; border-color: var(--accent); }
+.count {
+  min-width: 25px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: .7rem;
+  text-align: center;
+}
+
+.tool-select { margin-bottom: 14px; }
+.tool-select select {
+  width: 100%;
+  padding: 11px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+h2, h3, h4 { line-height: 1.2; }
+h2 { margin: 0 0 7px; }
+h3 { margin: 0 0 7px; }
+.small { font-size: .82rem; color: var(--muted); }
+
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+}
+.field textarea { min-height: 82px; resize: vertical; }
+.field .hint { font-size: .72rem; color: var(--muted); }
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 14px;
+}
+.result {
+  padding: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.result .label { color: var(--muted); font-size: .7rem; font-weight: 700; text-transform: uppercase; }
+.result .value { margin-top: 3px; font-size: 1.08rem; font-weight: 700; word-break: break-word; }
+.result.good .value { color: #047857; }
+.result.warn .value { color: #b45309; }
+.result.bad .value { color: #b91c1c; }
+
+.formula {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+  background: #fffbeb;
+  color: #713f12;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .78rem;
+  overflow-x: auto;
+}
+.notes {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.btn {
+  padding: 9px 14px;
+  background: var(--text);
+  color: #fff;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover { background: #333; }
+.btn.secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.btn.secondary:hover { background: var(--surface-2); }
+.btn.accent { background: var(--accent); }
+.btn.accent:hover { background: var(--accent-hover); }
+.btn.sm { padding: 6px 10px; font-size: .8rem; }
+
+.project-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 10px;
+}
+.project-row input { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: var(--radius); }
+
+.ref-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+.ref {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.ref b { display: block; margin-bottom: 4px; }
+.ref a { color: #1d4ed8; word-break: break-word; font-size: .8rem; }
+
+footer {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: .78rem;
+  text-align: center;
+}
+
+#toasts {
+  position: fixed;
+  right: 14px;
+  top: 14px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(360px, calc(100vw - 28px));
+}
+.toast { padding: 10px 13px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--success); border-radius: var(--radius); box-shadow: 0 4px 12px #0002; font-size: .82rem; }
+.toast.err { border-left-color: var(--error); }
+.toast.warn { border-left-color: var(--accent); }
+
+.hidden { display: none !important; }
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .category-list { max-height: none; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 650px) {
+  .topbar, .project-row, .input-grid, .result-grid, .ref-grid { grid-template-columns: 1fr; }
+  .category-list { grid-template-columns: 1fr; }
+  .container { padding: 24px 12px 45px; }
+}
+@media print {
+  .topbar, .sidebar, .actions, .tool-select { display: none !important; }
+  .layout { display: block; }
+  .card { box-shadow: none; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div id="toasts"></div>
+<div class="container">
+  <header>
+    <h1>Aznur Civil Studio - Geotechnical Engineering</h1>
+    <p class="subtitle">
+      Soil mechanics, site investigation, foundations, retaining structures, slopes,
+      piles, earthwork, ground improvement and geotechnical reference calculations.
+    </p>
+  </header>
+
+  <div class="notice">
+    <strong>Engineering-use warning:</strong>
+    This studio is a calculation and learning aid. Geotechnical behavior is highly
+    site-specific. Final design must use verified field/laboratory data, groundwater
+    conditions, structural loads, applicable project specifications and the governing code.
+    Do not use a screening calculation as a substitute for a geotechnical report or
+    professional design review.
+  </div>
+
+  <div class="topbar">
+    <input id="search" class="searchbox" type="search" placeholder="Search calculators: SPT, bearing capacity, consolidation, pile, slope, CPT…" autocomplete="off">
+    <div class="actions">
+      <button class="btn secondary" id="copyResult">Copy Result</button>
+      <button class="btn secondary" id="print">Print / PDF</button>
+      <button class="btn secondary" id="resetSettings">Reset Inputs</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="project-row">
+      <div><input id="projectName" placeholder="Project / Site name"></div>
+      <div><input id="engineerName" placeholder="Engineer / Student"></div>
+      <div><input id="reportNote" placeholder="Short note"></div>
+    </div>
+    <div class="small" style="margin-top:8px">Project information is stored only in this browser.</div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="card">
+        <h3>Categories</h3>
+        <div id="categories" class="category-list"></div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="card">
+        <h3>Calculator</h3>
+        <div class="tool-select">
+          <select id="calculatorSelect" aria-label="Choose geotechnical calculator"></select>
+        </div>
+        <div id="calculator"></div>
+      </div>
+
+      <section class="card">
+        <h3>Reference & field guidance</h3>
+        <p class="small">
+          The studio groups common geotechnical relationships and screening methods. Use the governing project code and the actual investigation data for design decisions.
+        </p>
+        <div class="ref-grid" style="margin-top:12px">
+          <div class="ref">
+            <b>Bangladesh - BNBC 2020</b>
+            <div class="small">Part 6 includes soils and foundations and is the primary local building-code reference to check for Bangladesh projects.</div>
+          </div>
+          <div class="ref">
+            <b>Eurocode 7</b>
+            <div class="small">EN 1997 covers geotechnical design and ground investigation as Parts 1 and 2.</div>
+          </div>
+          <div class="ref">
+            <b>USACE - Geotechnical</b>
+            <div class="small">Useful engineering manuals cover bearing capacity, settlement, investigations and foundation practice.</div>
+          </div>
+          <div class="ref">
+            <b>Common standards</b>
+            <div class="small">ASTM/ISO test standards can govern SPT, CPT, Atterberg limits, Proctor, permeability, consolidation and shear testing.</div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p>Aznur Civil Studio - Geotechnical Engineering. Local calculation only; no data is uploaded by this page.</p>
+        <p>Values are presented with engineering context and assumptions. Verify units, soil model, code provisions and project-specific parameters before use.</p>
+      </footer>
+    </main>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const state = {
+    category: "all",
+    selected: "",
+    lastText: "",
+    inputs: Object.create(null)
+  };
+
+  const EPS = 1e-12;
+  const PI = Math.PI;
+  const G = 9.80665;
+  const GAMMA_W = 9.81;
+
+  const categories = [
+    { id: "all", name: "All tools" },
+    { id: "soil", name: "Soil Properties & Phase Relations" },
+    { id: "classification", name: "Soil Classification" },
+    { id: "gradation", name: "Gradation & Index Tests" },
+    { id: "compaction", name: "Compaction & Earthwork" },
+    { id: "stress", name: "Stress, Seepage & Permeability" },
+    { id: "shear", name: "Shear Strength & Lab Tests" },
+    { id: "consolidation", name: "Consolidation & Settlement" },
+    { id: "shallow", name: "Shallow Foundations" },
+    { id: "deep", name: "Piles & Deep Foundations" },
+    { id: "slope", name: "Slopes & Stability" },
+    { id: "retaining", name: "Retaining & Earth Pressure" },
+    { id: "investigation", name: "Site Investigation / SPT / CPT" },
+    { id: "seismic", name: "Liquefaction & Seismic Screening" },
+    { id: "rock", name: "Rock & Rock Foundations" },
+    { id: "ground", name: "Ground Improvement" },
+    { id: "field", name: "Field QA / Geotechnical Reference" }
+  ];
+
+  const u = (key, label, unit, def = 0, min = null, max = null, step = "any") => ({ key, label, unit, def, min, max, step });
+
+  const calc = (id, title, category, description, inputs, compute, formula = "", notes = "") => ({
+    id, title, category, description, inputs, compute, formula, notes
+  });
+
+  function safeNum(value, fallback = 0) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+  function rad(deg) { return deg * PI / 180; }
+  function deg(radValue) { return radValue * 180 / PI; }
+  function cot(radValue) { return 1 / Math.tan(radValue); }
+  function sind(v) { return Math.sin(rad(v)); }
+  function cosd(v) { return Math.cos(rad(v)); }
+  function tand(v) { return Math.tan(rad(v)); }
+
+  function fmt(n, unit = "", digits = 5) {
+    if (typeof n !== "number" || !Number.isFinite(n)) return "-";
+    const a = Math.abs(n);
+    let out;
+    if (a !== 0 && (a >= 1e6 || a < 1e-4)) out = n.toExponential(Math.min(4, digits));
+    else out = n.toLocaleString(undefined, { maximumFractionDigits: digits });
+    return unit ? `${out} ${unit}` : out;
+  }
+
+  function percent(v, digits = 2) {
+    return `${fmt(v, "%", digits)}`;
+  }
+
+  function positive(name, v) {
+    if (!(v > 0)) throw new Error(`${name} must be greater than zero.`);
+  }
+
+  function nonNegative(name, v) {
+    if (!(v >= 0)) throw new Error(`${name} cannot be negative.`);
+  }
+
+  function angleRange(name, v) {
+    if (!(v > 0 && v < 90)) throw new Error(`${name} must be between 0° and 90°.`);
+  }
+
+  function outputsFromObject(obj, meta = {}) {
+    return { outputs: Object.entries(obj).map(([label, value]) => ({ label, value: typeof value === "object" ? value.value : value, unit: typeof value === "object" ? value.unit : "" })), meta };
+  }
+
+  function calcSoilPhase(v) {
+    const e = v.e, Gs = v.Gs, gammaW = v.gammaW;
+    positive("Void ratio", e); positive("Specific gravity", Gs); positive("Water unit weight", gammaW);
+    const n = e / (1 + e);
+    const gammaD = Gs * gammaW / (1 + e);
+    const gammaSat = (Gs + e) * gammaW / (1 + e);
+    const gammaSub = gammaSat - gammaW;
+    const wSat = e / Gs;
+    return outputsFromObject({
+      "Porosity n": { value: n * 100, unit: "%" },
+      "Dry unit weight γd": { value: gammaD, unit: "kN/m³" },
+      "Saturated unit weight γsat": { value: gammaSat, unit: "kN/m³" },
+      "Submerged unit weight γ′": { value: gammaSub, unit: "kN/m³" },
+      "Saturated water content wsat": { value: wSat * 100, unit: "%" }
+    });
+  }
+
+  const C = [];
+
+  // Soil properties & phase relations (10)
+  C.push(calc("water-content", "Water content from masses", "soil", "Compute gravimetric water content from wet and dry mass.", [u("mw", "Mass of water", "g", 20, 0), u("ms", "Mass of dry soil", "g", 100, 0)], v => outputsFromObject({ "Water content w": { value: v.mw / v.ms * 100, unit: "%" } }), "w = Mw / Ms × 100%"));
+  C.push(calc("void-ratio-porosity", "Void ratio ↔ porosity", "soil", "Convert between void ratio and porosity.", [u("e", "Void ratio e", "-", 0.65, 0), u("n", "Porosity n", "%", 39.39, 0, 99.9)], v => {
+    if (v.e > 0) return outputsFromObject({ "Porosity": { value: v.e / (1 + v.e) * 100, unit: "%" }, "Void ratio from e": { value: v.e, unit: "-" } });
+    const n = v.n / 100;
+    if (!(n > 0 && n < 1)) throw new Error("Porosity must be between 0 and 100%.");
+    return outputsFromObject({ "Void ratio": { value: n / (1 - n), unit: "-" }, "Porosity": { value: v.n, unit: "%" } });
+  }, "n = e/(1+e), e = n/(1−n)", "Enter either e or n; the interface accepts both and reports from e when e > 0."));
+  C.push(calc("degree-saturation", "Degree of saturation", "soil", "Compute saturation from water content, specific gravity and void ratio.", [u("w", "Water content", "%", 22, 0), u("Gs", "Specific gravity Gs", "-", 2.65, 1), u("e", "Void ratio e", "-", 0.72, 0)], v => {
+    positive("Specific gravity", v.Gs); positive("Void ratio", v.e); nonNegative("Water content", v.w);
+    return outputsFromObject({ "Saturation Sr": { value: v.w / 100 * v.Gs / v.e * 100, unit: "%" }, "Check": { value: v.w / 100 * v.Gs / v.e <= 1 ? "Physically plausible" : "Above 100% - check inputs", unit: "" } });
+  }, "Sr = w Gs / e"));
+  C.push(calc("soil-unit-weights", "Unit weights from phase data", "soil", "Estimate dry, bulk, saturated and submerged unit weights.", [u("e", "Void ratio e", "-", 0.65, 0), u("Gs", "Specific gravity Gs", "-", 2.65, 1), u("gammaW", "Water unit weight γw", "kN/m³", 9.81, 0)], calcSoilPhase, "γd = Gsγw/(1+e); γsat = (Gs+e)γw/(1+e); γ′ = γsat−γw"));
+  C.push(calc("unit-weight-water-content", "Bulk unit weight from w and dry unit weight", "soil", "Convert dry unit weight and water content to bulk unit weight.", [u("gammaD", "Dry unit weight", "kN/m³", 16, 0), u("w", "Water content", "%", 18, 0)], v => outputsFromObject({ "Bulk unit weight γ": { value: v.gammaD * (1 + v.w / 100), unit: "kN/m³" }, "Unit weight of solids approximation": { value: v.gammaD, unit: "kN/m³" } }), "γ = γd(1+w)"));
+  C.push(calc("specific-gravity-solids", "Specific gravity from pycnometer-style masses", "soil", "Calculate Gs from dry soil and displaced-water mass.", [u("Msoil", "Dry soil mass", "g", 150, 0), u("MflaskWater", "Flask + water", "g", 650, 0), u("Mcombined", "Flask + soil + water", "g", 742, 0)], v => { const Mw = v.MflaskWater + v.Msoil - v.Mcombined; positive("Displaced-water mass", Mw); return outputsFromObject({ "Specific gravity Gs": { value: v.Msoil / Mw, unit: "-" } }); }, "Gs = Msoil / (Mflask+water+soil displacement equivalent)"));
+  C.push(calc("bulk-density", "Density ↔ unit weight", "soil", "Convert density to mass density or unit weight.", [u("rho", "Density", "kg/m³", 1850, 0), u("gamma", "Unit weight", "kN/m³", 18.15, 0)], v => { return outputsFromObject({ "Unit weight from ρ": { value: v.rho * G / 1000, unit: "kN/m³" }, "Mass density from γ": { value: v.gamma * 1000 / G, unit: "kg/m³" } }); }, "γ = ρg"));
+  C.push(calc("relative-density", "Relative density of sand", "soil", "Compute Dr between minimum and maximum void ratio.", [u("emax", "Maximum void ratio", "-", 0.95, 0), u("emin", "Minimum void ratio", "-", 0.55, 0), u("e", "In-situ void ratio", "-", 0.70, 0)], v => { positive("e_max−e_min", v.emax - v.emin); return outputsFromObject({ "Relative density Dr": { value: (v.emax - v.e) / (v.emax - v.emin) * 100, unit: "%" }, "Interpretation": { value: v.e < v.emin || v.e > v.emax ? "Outside test range" : v.e >= (2*v.emax + v.emin)/3 ? "Dense range" : v.e <= (v.emax + 2*v.emin)/3 ? "Loose range" : "Medium range", unit: "" } }); }, "Dr = (emax−e)/(emax−emin)"));
+  C.push(calc("air-voids", "Air voids and air content", "soil", "Compute air voids and percent air from Sr and n.", [u("n", "Porosity", "%", 40, 0, 99.9), u("Sr", "Degree of saturation", "%", 70, 0, 100)], v => { const n=v.n/100, sr=v.Sr/100; return outputsFromObject({ "Air voids na": { value: n * (1-sr) * 100, unit: "% soil volume" }, "Air content ac": { value: (1-sr) * 100, unit: "% void volume" }, "Air-filled fraction of total volume": { value: n*(1-sr)*100, unit: "%" } }); }, "na = n(1−Sr); ac = (1−Sr)×100%"));
+  C.push(calc("saturated-water-content", "Saturated water content", "soil", "Compute the water content required for full saturation.", [u("Gs", "Specific gravity", "-", 2.65, 1), u("e", "Void ratio", "-", 0.75, 0)], v => outputsFromObject({ "wsat": { value: v.e/v.Gs*100, unit: "%" } }), "wsat = e/Gs"));
+  C.push(calc("dry-density-from-relative", "Dry density from void ratio", "soil", "Compute dry density using Gs and void ratio.", [u("Gs", "Specific gravity", "-", 2.65, 1), u("e", "Void ratio", "-", 0.65, 0)], v => outputsFromObject({ "Dry density": { value: 1000*v.Gs/(1+v.e), unit: "kg/m³" }, "Dry unit weight": { value: 9.81*v.Gs/(1+v.e), unit: "kN/m³" } }), "ρd = ρw Gs/(1+e)"));
+
+  // Classification (8)
+  C.push(calc("uscs-coarse", "USCS coarse-soil screening", "classification", "Screen the primary USCS branch from percent fines and coarse fraction.", [u("fines", "Passing No. 200 fines", "%", 8, 0, 100), u("gravel", "Gravel fraction of total", "%", 20, 0, 100), u("Cu", "Uniformity coefficient", "-", 6, 0), u("Cc", "Curvature coefficient", "-", 2, 0)], v => {
+    const sand = 100-v.fines-v.gravel; positive("Remaining sand fraction", sand); let desc;
+    if(v.fines>=50) desc="Fine-grained branch (ML/CL/MH/CH or organic/fine branches need Atterberg tests)";
+    else if(v.gravel > sand) desc = v.fines<5 ? (v.Cu>=4 && v.Cc>=1 && v.Cc<=3 ? "GW-screen" : "GP-screen") : "Gravel with fines: GM/GC branch requires plasticity";
+    else desc = v.fines<5 ? (v.Cu>=6 && v.Cc>=1 && v.Cc<=3 ? "SW-screen" : "SP-screen") : "Sand with fines: SM/SC branch requires plasticity";
+    return outputsFromObject({ "USCS screening": { value: desc, unit: "" }, "Sand fraction": { value: sand, unit: "%" } });
+  }, "USCS coarse/fine branching uses gradation + Atterberg/plasticity; this is a screening tool."));
+  C.push(calc("aashto-group", "AASHTO soil group screening", "classification", "Estimate AASHTO group from F, LL and PI; group indices are approximate.", [u("F", "% passing No. 200", "%", 38, 0, 100), u("LL", "Liquid limit", "%", 35, 0), u("PI", "Plasticity index", "%", 12, 0)], v => {
+    let group="A-1/A-2 candidate";
+    if(v.F>35){
+      if(v.LL<=40 && v.PI<=10) group="A-4 candidate";
+      else if(v.LL<=40 && v.PI>10) group="A-6 candidate";
+      else if(v.LL>40 && v.PI<=10) group="A-5 candidate";
+      else group="A-7 candidate (A-7-5/A-7-6 split needs LL−30 check)";
+    } else {
+      if(v.F<=15 && v.PI<=6) group="A-1/A-3 candidate";
+      else group="A-2 candidate";
+    }
+    const GI = Math.max(0, Math.round((v.F-35)*(0.2+0.005*(v.LL-40)) + 0.01*(v.F-15)*(v.PI-10)));
+    return outputsFromObject({ "AASHTO screening": { value: group, unit: "" }, "Approx. Group Index GI": { value: GI, unit: "-" } });
+  }, "AASHTO group classification should use the full standard criteria; this is a quick screening aid."));
+  C.push(calc("plasticity-index", "Plasticity index", "classification", "Compute PI from LL and PL.", [u("LL", "Liquid limit", "%", 42, 0), u("PL", "Plastic limit", "%", 23, 0)], v => outputsFromObject({ "Plasticity index PI": { value: v.LL-v.PL, unit: "%" }, "Classification cue": { value: v.LL-v.PL>7 ? "Plastic" : "Low/no plasticity", unit: "" } }), "PI = LL−PL"));
+  C.push(calc("liquidity-index", "Liquidity index", "classification", "Compare natural water content with the Atterberg limits.", [u("w", "Natural water content", "%", 30, 0), u("PL", "Plastic limit", "%", 20, 0), u("LL", "Liquid limit", "%", 45, 0)], v => { const PI=v.LL-v.PL; positive("PI", PI); return outputsFromObject({ "Liquidity index IL": { value: (v.w-v.PL)/PI, unit: "-" }, "Consistency cue": { value: v.w<=v.PL?"Below plastic limit":v.w>=v.LL?"At/above liquid limit":"Within plastic range", unit:"" } }); }, "IL = (w−PL)/PI"));
+  C.push(calc("consistency-index", "Consistency index", "classification", "Compute consistency index from LL, w and PI.", [u("w", "Natural water content", "%", 30, 0), u("PL", "Plastic limit", "%", 20, 0), u("LL", "Liquid limit", "%", 45, 0)], v => { const PI=v.LL-v.PL; positive("PI",PI); return outputsFromObject({ "Consistency index Ic": { value:(v.LL-v.w)/PI, unit:"-" } }); }, "Ic = (LL−w)/PI"));
+  C.push(calc("plasticity-chart", "Casagrande A-line", "classification", "Compare measured PI with the A-line for mineral fine soils.", [u("LL", "Liquid limit", "%", 45, 0), u("PI", "Plasticity index", "%", 18, 0)], v => { const aline=0.73*(v.LL-20); return outputsFromObject({ "A-line PI": { value: aline, unit:"%" }, "Position": { value:v.PI>aline?"Above A-line (clay-side)":"Below A-line (silt-side)", unit:"" } }); }, "PI_A = 0.73(LL−20) for LL > 20"));
+  C.push(calc("soil-name-fines", "Fine content / gravel-sand split", "classification", "Calculate sand and gravel fractions from sieve splits.", [u("passing4_75", "Passing 4.75 mm", "%", 72, 0,100), u("passing0_075", "Passing 0.075 mm", "%", 8, 0,100)], v => { return outputsFromObject({ "Gravel fraction": { value:100-v.passing4_75, unit:"%" }, "Sand fraction": { value:v.passing4_75-v.passing0_075, unit:"%" }, "Fines": { value:v.passing0_075, unit:"%" } }); }, "Gravel = 100−P4.75; Sand=P4.75−P0.075; Fines=P0.075"));
+  C.push(calc("shrinkage-limit", "Shrinkage limit", "classification", "Approximate shrinkage limit from dry/wet volumes and mass data.", [u("Mwet", "Wet specimen mass", "g", 50,0), u("Mdry", "Dry specimen mass", "g", 38,0), u("Vwet", "Wet specimen volume", "cm³", 28,0), u("Vdry", "Dry specimen volume", "cm³", 20,0), u("rhoW", "Water density", "g/cm³",1,0)], v => { return outputsFromObject({ "Shrinkage limit ws": { value: ((v.Mwet-v.Mdry)/v.Mdry*100 - (v.Vwet-v.Vdry)*v.rhoW/v.Mdry*100), unit:"%" } }); }, "ws ≈ [(Mw−Md)/Md − (Vw−Vd)ρw/Md]×100"));
+
+  // Gradation (8)
+  C.push(calc("gradation-cu-cc", "Gradation Cu & Cc", "gradation", "Compute uniformity and curvature coefficients from D10, D30, D60.", [u("D10", "D10", "mm", 0.20,0), u("D30", "D30", "mm",0.45,0), u("D60", "D60", "mm",1.20,0)], v => outputsFromObject({ "Cu": { value:v.D60/v.D10, unit:"-" }, "Cc": { value:(v.D30*v.D30)/(v.D10*v.D60), unit:"-" } }), "Cu = D60/D10; Cc = D30²/(D10D60)"));
+  C.push(calc("gradation-percent-retained", "Percent retained / passing", "gradation", "Convert sieve retained masses to percentages.", [u("Mret", "Mass retained on sieve", "g",30,0), u("Mtotal", "Total sample mass", "g",500,0)], v => outputsFromObject({ "% retained": { value:v.Mret/v.Mtotal*100, unit:"%" }, "% passing": { value:(1-v.Mret/v.Mtotal)*100, unit:"%" } }), "% retained = Mi/Mtotal × 100"));
+  C.push(calc("gradation-dvalue-log", "Interpolate D-value on semi-log gradation curve", "gradation", "Estimate D10/D30/D60 between two adjacent points using logarithmic particle-size interpolation.", [u("P1", "Percent passing at lower D", "%",20,0,100), u("P2", "Percent passing at upper D", "%",40,0,100), u("D1", "Lower particle size", "mm",0.30,0), u("D2", "Upper particle size", "mm",0.80,0), u("Ptarget", "Target percent passing", "%",30,0,100)], v => { positive("D1",v.D1); positive("D2",v.D2); if(v.P2===v.P1) throw new Error("P1 and P2 must differ."); const x=(v.Ptarget-v.P1)/(v.P2-v.P1); const D=Math.exp(Math.log(v.D1)+x*(Math.log(v.D2)-Math.log(v.D1))); return outputsFromObject({ "Interpolated D": {value:D,unit:"mm"}, "Interpolation fraction": {value:x,unit:"-"}}); }, "log D = log D1 + [(P−P1)/(P2−P1)](log D2−log D1)"));
+  C.push(calc("sieve-sample-mass", "Minimum sieve sample estimate", "gradation", "Screen a sample mass based on nominal largest particle size.", [u("Dmax", "Largest particle size", "mm",9.5,0), u("massPerMm", "Sample mass factor", "g/mm",25,0)], v => outputsFromObject({ "Suggested sample mass": {value:v.Dmax*v.massPerMm,unit:"g"}, "Equivalent": {value:v.Dmax*v.massPerMm/1000,unit:"kg"}}), "Project-lab screening heuristic; follow the applicable test standard for the actual sample mass."));
+  C.push(calc("hydrometer-stokes", "Hydrometer settling particle size", "gradation", "Estimate equivalent particle diameter using Stokes' law.", [u("mu", "Dynamic viscosity μ", "Pa·s",0.001,0), u("L", "Effective depth L", "m",0.10,0), u("rhoS", "Particle density", "kg/m³",2650,0), u("rhoW", "Water density", "kg/m³",998,0), u("t", "Settling time", "s",3600,0)], v => { positive("rhoS−rhoW",v.rhoS-v.rhoW); const D=Math.sqrt(18*v.mu*v.L/(G*(v.rhoS-v.rhoW)*v.t)); return outputsFromObject({ "Equivalent D": {value:D*1000,unit:"mm"}}); }, "D = √[18μL/(g(ρs−ρw)t)]"));
+  C.push(calc("d10-permeability-indirect", "Haz​en permeability estimate", "gradation", "Estimate k from D10 for clean, relatively uniform sands using a simple empirical relation.", [u("D10", "D10", "mm",0.25,0), u("factor", "Coefficient A", "1/(s·mm²)",0.01,0)], v => outputsFromObject({ "Estimated k": {value:v.factor*v.D10*v.D10*1e-3,unit:"m/s"}}), "k ≈ A·D10² (empirical; calibration is project/lab specific)"));
+  C.push(calc("gradation-curves", "Gradation statistics", "gradation", "Compute mean size, sorting and simple coarse/fine proportions from D-values.", [u("D10","D10","mm",0.20,0),u("D30","D30","mm",0.45,0),u("D50","D50","mm",0.70,0),u("D60","D60","mm",1.20,0)], v => outputsFromObject({ "D50":{value:v.D50,unit:"mm"}, "Cu":{value:v.D60/v.D10,unit:"-"}, "D30²/(D10D60)":{value:v.D30*v.D30/(v.D10*v.D60),unit:"-"}, "Log midpoint √(D10D60)":{value:Math.sqrt(v.D10*v.D60),unit:"mm"} }), "Common gradation descriptors use D-values and their logarithms."));
+  C.push(calc("percent-fines-mass", "Fines percentage from wash test", "gradation", "Compute fines lost during washing relative to the original dry mass.", [u("Mbefore","Mass before wash","g",500,0),u("Mafter","Mass after wash","g",460,0)], v => outputsFromObject({ "Fines":{value:(v.Mbefore-v.Mafter)/v.Mbefore*100,unit:"%"}, "Mass lost":{value:v.Mbefore-v.Mafter,unit:"g"}}), "% fines = (Mbefore−Mafter)/Mbefore"));
+  C.push(calc("specific-surface", "Approximate specific surface from particle size", "gradation", "Screen an idealized specific-surface estimate for spherical particles.", [u("rhoS","Particle density","kg/m³",2650,0),u("D","Representative diameter","mm",0.5,0)], v => outputsFromObject({ "Specific surface":{value:6/(v.rhoS*(v.D/1000)),unit:"m²/kg"}}), "SSA ≈ 6/(ρsD) for ideal spheres"));
+
+  // Compaction / earthwork (10)
+  C.push(calc("dry-density-compaction", "Dry density from bulk density", "compaction", "Compute dry density from moist density and water content.", [u("rho","Bulk density","kg/m³",1900,0),u("w","Water content","%",12,0)], v => outputsFromObject({ "Dry density":{value:v.rho/(1+v.w/100),unit:"kg/m³"},"Dry unit weight":{value:v.rho*G/1000/(1+v.w/100),unit:"kN/m³"}}), "ρd = ρ/(1+w)"));
+  C.push(calc("relative-compaction", "Relative compaction", "compaction", "Compare field dry density with the laboratory maximum dry density.", [u("rhoField","Field dry density","kg/m³",1820,0),u("rhoMax","Maximum dry density","kg/m³",1950,0)], v => outputsFromObject({ "Relative compaction":{value:v.rhoField/v.rhoMax*100,unit:"%"},"Density deficit":{value:v.rhoMax-v.rhoField,unit:"kg/m³"}}), "RC = ρd(field)/ρd(max) × 100%"));
+  C.push(calc("proctor-water-content", "Compaction curve point", "compaction", "Compute dry density at a given water content for a compaction-test point.", [u("rhoWet","Wet density","kg/m³",1950,0),u("w","Water content","%",14,0)], v => outputsFromObject({ "Dry density":{value:v.rhoWet/(1+v.w/100),unit:"kg/m³"}}), "ρd = ρwet/(1+w)"));
+  C.push(calc("zero-air-voids", "Zero-air-voids line", "compaction", "Compute theoretical maximum dry density for a fully saturated soil.", [u("Gs","Specific gravity","-",2.70,1),u("gammaW","Water unit weight","kN/m³",9.81,0),u("w","Water content","%",12,0)], v => outputsFromObject({ "ZAV dry unit weight":{value:v.Gs*v.gammaW/(1+v.w/100*v.Gs),unit:"kN/m³"},"ZAV dry density":{value:v.Gs*1000/(1+v.w/100*v.Gs),unit:"kg/m³"}}), "γd,ZAV = Gsγw/[1+wGs]"));
+  C.push(calc("bulking", "Soil bulking / swell", "compaction", "Estimate volume increase from bank to loose state.", [u("Vbank","Bank volume","m³",100,0),u("swell","Swell","%",15,0)], v => outputsFromObject({ "Loose volume":{value:v.Vbank*(1+v.swell/100),unit:"m³"},"Added volume":{value:v.Vbank*v.swell/100,unit:"m³"}}), "Vloose = Vbank(1+swell)"));
+  C.push(calc("shrinkage","Shrinkage after compaction", "compaction", "Estimate compacted volume from excavated bank volume and shrinkage.", [u("Vbank","Bank volume","m³",100,0),u("shrink","Shrinkage","%",8,0)], v => outputsFromObject({ "Compacted volume":{value:v.Vbank*(1-v.shrink/100),unit:"m³"},"Volume loss":{value:v.Vbank*v.shrink/100,unit:"m³"}}), "Vcomp = Vbank(1−shrink)"));
+  C.push(calc("cut-fill-balance", "Cut/fill balance with swell", "compaction", "Compare cut material and required compacted fill accounting for swell and compaction factors.", [u("Vcut","Cut volume","m³",1000,0),u("swell","Loose swell","%",20,0),u("compaction","Compacted fill fraction of loose","%",90,1,100)], v => { const loose=v.Vcut*(1+v.swell/100); const compacted=loose*(v.compaction/100); return outputsFromObject({"Loose cut volume":{value:loose,unit:"m³"},"Equivalent compacted fill":{value:compacted,unit:"m³"},"Equivalent compacted factor":{value:compacted/v.Vcut,unit:"×"}}); }, "Vloose=Vcut(1+swell); Vcomp=Vloose·compaction"));
+  C.push(calc("earthwork-volume-prismoidal", "Prismoidal earthwork volume", "compaction", "Compute cut/fill volume using the prismoidal formula.", [u("A1","End area 1","m²",120,0),u("Am","Middle area","m²",100,0),u("A2","End area 2","m²",90,0),u("L","Length","m",20,0)], v => outputsFromObject({ "Volume":{value:v.L/6*(v.A1+4*v.Am+v.A2),unit:"m³"}}), "V = L/6(A1+4Am+A2)"));
+  C.push(calc("trapezoidal-earthwork", "Average-end-area earthwork", "compaction", "Compute volume using average end areas.", [u("A1","Area 1","m²",120,0),u("A2","Area 2","m²",90,0),u("L","Length","m",20,0)], v => outputsFromObject({ "Volume":{value:v.L*(v.A1+v.A2)/2,unit:"m³"}}), "V = L(A1+A2)/2"));
+  C.push(calc("hauling-volume", "Haul tonnage", "compaction", "Convert excavated volume to transport mass.", [u("V","Loose volume","m³",80,0),u("rho","Loose bulk density","kg/m³",1700,0)], v => outputsFromObject({"Mass":{value:v.V*v.rho/1000,unit:"tonnes"},"Truck loads at capacity":{value:Math.ceil(v.V*v.rho/1000/15),unit:"loads @ 15 t"}}), "M = ρV"));
+  C.push(calc("compaction-energy","Compaction energy per volume", "compaction", "Estimate delivered mechanical compaction energy per unit volume.",[u("W","Compactive work","kN·m",4000,0),u("V","Compacted volume","m³",25,0)],v=>outputsFromObject({"Energy density":{value:v.W/v.V,unit:"kN·m/m³ = kPa"}}),"E/V"));
+
+  // Stress / permeability / seepage (10)
+  C.push(calc("total-overburden","Total overburden stress", "stress", "Sum vertical stress from layered soil unit weights.",[u("gamma1","Layer 1 unit weight","kN/m³",18,0),u("z1","Layer 1 thickness","m",3,0),u("gamma2","Layer 2 unit weight","kN/m³",19,0),u("z2","Layer 2 thickness","m",5,0),u("gamma3","Layer 3 unit weight","kN/m³",20,0),u("z3","Layer 3 thickness","m",4,0)],v=>outputsFromObject({"Vertical total stress σv":{value:v.gamma1*v.z1+v.gamma2*v.z2+v.gamma3*v.z3,unit:"kPa"}}),"σv = Σγi zi"));
+  C.push(calc("pore-pressure","Hydrostatic pore-water pressure", "stress", "Compute pore pressure at depth below groundwater table.",[u("depth","Depth below groundwater","m",5,0),u("gammaW","Water unit weight","kN/m³",9.81,0)],v=>outputsFromObject({"Pore pressure u":{value:v.depth*v.gammaW,unit:"kPa"}}),"u = γw zw"));
+  C.push(calc("effective-stress","Effective vertical stress", "stress", "Compute effective stress using total stress and pore pressure.",[u("sigmaV","Total vertical stress","kPa",180,0),u("u","Pore pressure","kPa",50,0)],v=>outputsFromObject({"Effective stress σ′v":{value:v.sigmaV-v.u,unit:"kPa"}}),"σ′ = σ−u"));
+  C.push(calc("submerged-stress","Submerged vertical stress increment", "stress", "Estimate submerged effective overburden stress below a water table.",[u("gammaSat","Saturated unit weight","kN/m³",19.5,0),u("gammaW","Water unit weight","kN/m³",9.81,0),u("z","Depth below WT","m",6,0)],v=>outputsFromObject({"Effective increment":{value:(v.gammaSat-v.gammaW)*v.z,unit:"kPa"}}),"Δσ′ = (γsat−γw)z"));
+  C.push(calc("stress-boussinesq","Point load stress increment", "stress", "Approximate vertical stress below a surface point load using the Boussinesq point-load solution.",[u("Q","Point load","kN",500,0),u("z","Depth","m",3,0),u("r","Radial distance","m",2,0)],v=>{ const denom=Math.pow(v.r*v.r+v.z*v.z,2.5); const ds=3*v.Q/(2*PI)*Math.pow(v.z,3)/denom; return outputsFromObject({"Δσz":{value:ds,unit:"kPa"}});},"Δσz = 3Q/(2π) · z³/(r²+z²)^(5/2)"));
+  C.push(calc("stress-2to1","2:1 stress distribution", "stress", "Estimate stress increment under a rectangular loaded area with simple 2:1 dispersion.",[u("Q","Applied load","kN",1000,0),u("B","Loaded width","m",2,0),u("L","Loaded length","m",3,0),u("z","Depth","m",4,0)],v=>{ const A=(v.B+v.z)*(v.L+v.z); return outputsFromObject({"Stress increment Δσ":{value:v.Q/A,unit:"kPa"},"Dispersed area":{value:A,unit:"m²"}});},"Δσ ≈ Q/[(B+z)(L+z)]"));
+  C.push(calc("darcy-flow","Darcy discharge", "stress", "Compute one-dimensional seepage flow through soil.",[u("k","Hydraulic conductivity","m/s",1e-5,0),u("i","Hydraulic gradient","-",0.20,0),u("A","Flow area","m²",4,0)],v=>outputsFromObject({"Specific discharge q":{value:v.k*v.i,unit:"m/s"},"Flow Q":{value:v.k*v.i*v.A,unit:"m³/s"}}),"q = ki; Q = kiA"));
+  C.push(calc("hydraulic-gradient","Hydraulic gradient", "stress", "Compute head loss per unit length.",[u("dh","Head loss","m",2,0),u("L","Flow length","m",25,0)],v=>outputsFromObject({"Hydraulic gradient i":{value:v.dh/v.L,unit:"-"}}),"i = Δh/L"));
+  C.push(calc("flow-net","Flow-net discharge", "stress", "Estimate seepage per unit width from number of flow channels and equipotential drops.",[u("k","Hydraulic conductivity","m/s",1e-5,0),u("H","Total head loss","m",5,0),u("Nf","Flow channels","-",4,0),u("Nd","Potential drops","-",10,0)],v=>outputsFromObject({"Discharge per unit width q":{value:v.k*v.H*v.Nf/v.Nd,unit:"m²/s"}}),"q = k H Nf/Nd"));
+  C.push(calc("seepage-exit-gradient","Exit gradient", "stress", "Compute an approximate exit gradient and factor against a critical gradient.",[u("gammaSat","Saturated unit weight","kN/m³",19,0),u("gammaW","Water unit weight","kN/m³",9.81,0),u("Gs","Specific gravity", "-",2.65,1),u("e","Void ratio","-",0.70,0),u("iExit","Exit gradient","-",0.80,0)],v=>{ const ic=(v.Gs-1)/(1+v.e); return outputsFromObject({"Critical gradient ic":{value:ic,unit:"-"},"Exit gradient i":{value:v.iExit,unit:"-"},"Seepage FS":{value:ic/v.iExit,unit:"-"}});},"ic=(Gs−1)/(1+e); FS=ic/i_exit"));
+
+  // Shear (10)
+  C.push(calc("mohr-coulomb","Mohr–Coulomb shear strength", "shear", "Compute drained/undrained-style shear strength from c′, σ′ and φ′.",[u("c","Cohesion c′","kPa",15,0),u("sigma","Normal effective stress σ′","kPa",100,0),u("phi","Friction angle φ′","deg",28,0,89)],v=>outputsFromObject({"Shear strength τf":{value:v.c+v.sigma*tand(v.phi),unit:"kPa"}}),"τf = c′ + σ′ tanφ′"));
+  C.push(calc("effective-stress-failure","Effective stress at failure", "shear", "Back-calculate effective stress from measured shear strength.",[u("tau","Shear strength","kPa",80,0),u("c","Cohesion c′","kPa",10,0),u("phi","Friction angle","deg",30,0,89)],v=>outputsFromObject({"σ′ at failure":{value:(v.tau-v.c)/tand(v.phi),unit:"kPa"}}),"σ′=(τ−c′)/tanφ′"));
+  C.push(calc("direct-shear-envelope","Direct shear envelope from two tests", "shear", "Fit c and φ from two normal-stress/shear-strength pairs.",[u("s1","Normal stress 1","kPa",50,0),u("t1","Shear strength 1","kPa",35,0),u("s2","Normal stress 2","kPa",150,0),u("t2","Shear strength 2","kPa",95,0)],v=>{ if(v.s2===v.s1)throw new Error("Normal stresses must differ."); const m=(v.t2-v.t1)/(v.s2-v.s1); const phi=deg(Math.atan(m)); const c=v.t1-m*v.s1; return outputsFromObject({"c":{value:c,unit:"kPa"},"φ":{value:phi,unit:"deg"},"tanφ":{value:m,unit:"-"}});},"tanφ=(τ2−τ1)/(σ2−σ1); c=τ1−σ1tanφ"));
+  C.push(calc("undrained-ucs","Unconfined compression to undrained shear strength", "shear", "Compute qu from axial load and area, then su ≈ qu/2.",[u("P","Peak axial load","kN",25,0),u("A0","Initial specimen area","m²",0.00196,0),u("strain","Axial strain at failure","%",8,0)],v=>{ const A=v.A0/(1-v.strain/100); const qu=v.P/A; return outputsFromObject({"Corrected area":{value:A,unit:"m²"},"qu":{value:qu,unit:"kPa"},"Undrained shear strength su≈qu/2":{value:qu/2,unit:"kPa"}});},"qu=P/A; su≈qu/2 for saturated cohesive soil in unconfined compression"));
+  C.push(calc("triaxial-total-stress","Triaxial Mohr envelope from two tests", "shear", "Estimate total-stress c and φ from two compression tests.",[u("s1","Cell pressure σ3,1","kPa",100,0),u("q1","Deviator stress q1","kPa",220,0),u("s2","Cell pressure σ3,2","kPa",200,0),u("q2","Deviator stress q2","kPa",360,0)],v=>{ const s11=v.s1, s12=v.s1+v.q1, s21=v.s2, s22=v.s2+v.q2; const R1=(s12-s11)/2, C1=(s12+s11)/2, R2=(s22-s21)/2, C2=(s22+s21)/2; const m=(R2-R1)/(C2-C1); const phi=Math.asin(clamp(m,-1,1)); const c=(C1-R1*Math.cos(phi))/Math.cos(phi); return outputsFromObject({"Estimated φ":{value:deg(phi),unit:"deg"},"Estimated c":{value:c,unit:"kPa"},"σ1 test 1":{value:s12,unit:"kPa"}});},"Mohr circle geometry: sinφ=(R2−R1)/(C2−C1); intercept gives c"));
+  C.push(calc("mohr-circle","Mohr circle principal stresses", "shear", "Compute circle center, radius and maximum shear stress.",[u("sigma1","Major principal stress σ1","kPa",300,0),u("sigma3","Minor principal stress σ3","kPa",100,0)],v=>outputsFromObject({"Center σavg":{value:(v.sigma1+v.sigma3)/2,unit:"kPa"},"Radius R":{value:(v.sigma1-v.sigma3)/2,unit:"kPa"},"τmax":{value:(v.sigma1-v.sigma3)/2,unit:"kPa"}}),"C=(σ1+σ3)/2; R=(σ1−σ3)/2"));
+  C.push(calc("principal-stress-from-plane","Stress transformation to principal stresses", "shear", "Compute principal stresses and maximum in-plane shear from σx, σy and τxy.",[u("sx","σx","kPa",120),u("sy","σy","kPa",60),u("txy","τxy","kPa",25,-1e9,1e9)],v=>{ const Cc=(v.sx+v.sy)/2, R=Math.sqrt(((v.sx-v.sy)/2)**2+v.txy**2); return outputsFromObject({"σ1":{value:Cc+R,unit:"kPa"},"σ2":{value:Cc-R,unit:"kPa"},"τmax":{value:R,unit:"kPa"},"Principal angle θp":{value:0.5*deg(Math.atan2(2*v.txy,v.sx-v.sy)),unit:"deg"}});},"σ1,2=(σx+σy)/2 ± √[((σx−σy)/2)²+τxy²]"));
+  C.push(calc("factor-of-safety-shear","Shear strength factor of safety", "shear", "Compare available shear strength against mobilized shear stress.",[u("c","Cohesion","kPa",15,0),u("sigma","Normal effective stress","kPa",120,0),u("phi","Friction angle","deg",28,0,89),u("tauMob","Mobilized shear stress","kPa",45,0)],v=>{ const tf=v.c+v.sigma*tand(v.phi); return outputsFromObject({"Available τf":{value:tf,unit:"kPa"},"FS":{value:tf/v.tauMob,unit:"-"}});},"FS=(c′+σ′tanφ′)/τmobilized"));
+  C.push(calc("dilatancy-angle","Dilatancy / friction mobilization cue", "shear", "Compare peak friction angle with a critical-state friction angle.",[u("phiPeak","Peak friction angle","deg",34,0,89),u("phiCS","Critical-state friction angle","deg",30,0,89)],v=>outputsFromObject({"Dilatancy angle ψ":{value:v.phiPeak-v.phiCS,unit:"deg"},"Cue":{value:v.phiPeak>v.phiCS?"Positive dilatancy likely":"Little/no positive dilatancy",unit:""}}),"ψ ≈ φpeak−φcs"));
+  C.push(calc("sensitivity","Clay sensitivity", "shear", "Compare undisturbed and remolded undrained strength.",[u("SuUndist","Undisturbed su","kPa",80,0),u("SuRemold","Remolded su","kPa",20,0)],v=>outputsFromObject({"Sensitivity St":{value:v.SuUndist/v.SuRemold,unit:"-"}}),"St=Su(undisturbed)/Su(remolded)"));
+
+  // Consolidation & settlement (10)
+  C.push(calc("immediate-settlement","Elastic immediate settlement", "consolidation", "Estimate immediate settlement using a one-dimensional elastic approximation.",[u("q","Applied net pressure","kPa",100,0),u("B","Foundation width","m",2,0),u("E","Young's modulus","MPa",20,0),u("nu","Poisson ratio","-",0.35,0,0.49),u("Is","Influence factor","-",1.0,0)],v=>outputsFromObject({"Immediate settlement si":{value:v.q*1000*v.B*(1-v.nu*v.nu)*v.Is/(v.E*1e6),unit:"m"},"Immediate settlement":{value:v.q*1000*v.B*(1-v.nu*v.nu)*v.Is/(v.E*1e6)*1000,unit:"mm"}}),"si≈qB(1−ν²)Is/E"));
+  C.push(calc("one-d-consolidation","1-D consolidation settlement", "consolidation", "Compute primary consolidation settlement for normally consolidated clay.",[u("H","Compressible layer thickness","m",5,0),u("e0","Initial void ratio","-",1.10,0),u("Cc","Compression index Cc","-",0.30,0),u("sigma0","Initial effective stress","kPa",80,0),u("dsigma","Stress increment","kPa",60,0)],v=>{ return outputsFromObject({"Primary consolidation Sc":{value:v.H/(1+v.e0)*v.Cc*Math.log10((v.sigma0+v.dsigma)/v.sigma0),unit:"m"}});},"Sc=H Cc/(1+e0) log10[(σ′0+Δσ′)/σ′0]"));
+  C.push(calc("recompression-settlement","Overconsolidated settlement with Cr", "consolidation", "Piecewise recompression + virgin compression estimate for an overconsolidated clay.",[u("H","Layer thickness","m",5,0),u("e0","Initial void ratio","-",1.0,0),u("Cr","Recompression index","-",0.05,0),u("Cc","Compression index","-",0.30,0),u("sigma0","Initial effective stress","kPa",80,0),u("sigmap","Preconsolidation stress","kPa",140,0),u("sigmaf","Final effective stress","kPa",220,0)],v=>{ let S=0; if(v.sigmaf<=v.sigmap) S=v.H/(1+v.e0)*v.Cr*Math.log10(v.sigmaf/v.sigma0); else { const S1=v.H/(1+v.e0)*v.Cr*Math.log10(v.sigmap/v.sigma0); const eAfter=v.e0-v.Cr*Math.log10(v.sigmap/v.sigma0); const S2=v.H/(1+v.e0)*v.Cc*Math.log10(v.sigmaf/v.sigmap); S=S1+S2; } return outputsFromObject({"Estimated settlement":{value:S,unit:"m"},"Stage":{value:v.sigmaf<=v.sigmap?"Recompression only":"Recompression + virgin compression",unit:""}});},"Sc≈H/(1+e0)[Cr log10(σ′p/σ′0)+Cc log10(σ′f/σ′p)] when σ′f>σ′p"));
+  C.push(calc("cv-from-time","Coefficient of consolidation from time factor", "consolidation", "Back-calculate Cv from a selected degree of consolidation and drainage path.",[u("Tv","Time factor Tv","-",0.197,0),u("Hd","Drainage path length","m",2.5,0),u("t","Time","days",100,0)],v=>outputsFromObject({"Cv":{value:v.Tv*(v.Hd*v.Hd)/(v.t*86400),unit:"m²/s"}}),"Cv = Tv Hd²/t"));
+  C.push(calc("time-consolidation","Time for a target consolidation degree", "consolidation", "Estimate time from Cv and a one-dimensional time factor.",[u("Cv","Coefficient of consolidation","m²/s",2e-8,0),u("Hd","Drainage path","m",2.5,0),u("Tv","Time factor","-",0.848,0)],v=>outputsFromObject({"Time":{value:v.Tv*v.Hd*v.Hd/v.Cv/86400,unit:"days"},"Time":{value:v.Tv*v.Hd*v.Hd/v.Cv/31557600,unit:"years"}}),"t=Tv Hd²/Cv"));
+  C.push(calc("secondary-compression","Secondary compression settlement", "consolidation", "Estimate creep settlement after primary consolidation.",[u("H","Layer thickness","m",5,0),u("Ca","Secondary compression index","-",0.02,0),u("e1","Void ratio at start secondary","-",0.90,0),u("t1","Start time","days",100,0),u("t2","End time","days",3650,0)],v=>outputsFromObject({"Secondary settlement Ss":{value:v.H*v.Ca/(1+v.e1)*Math.log10(v.t2/v.t1),unit:"m"}}),"Ss=H Ca/(1+e1) log10(t2/t1)"));
+  C.push(calc("mv-settlement","Coefficient of volume compressibility and settlement", "consolidation", "Estimate mv and one-dimensional settlement from an oedometer load increment.",[u("deltaE","Void-ratio change Δe","-",0.12,0),u("e0","Initial void ratio","-",0.95,0),u("deltaSigma","Effective stress increment","kPa",100,0),u("H","Layer thickness","m",4,0)],v=>{ const mv=v.deltaE/((1+v.e0)*v.deltaSigma); return outputsFromObject({"mv":{value:mv,unit:"1/kPa"},"Settlement":{value:mv*v.deltaSigma*v.H,unit:"m"}});},"mv=Δe/[(1+e0)Δσ′]; Sc=mvΔσ′H"));
+  C.push(calc("oedometer-cv","Oedometer Cv from square-root time", "consolidation", "Estimate Cv from the time to 90% consolidation using a simple Terzaghi time-factor relation.",[u("t90","Time to 90% consolidation","s",2e6,0),u("Hd","Drainage path","m",0.01,0)],v=>outputsFromObject({"Cv":{value:0.848*v.Hd*v.Hd/v.t90,unit:"m²/s"}}),"Tv,90≈0.848; Cv=TvHd²/t90"));
+  C.push(calc("pore-pressure-parameter","Skempton pore-pressure increment", "consolidation", "Estimate undrained Δu from Δσ3, Δσ1−Δσ3 using A and B parameters.",[u("dSigma3","Δσ3","kPa",50,0),u("dSigma1","Δσ1","kPa",120,0),u("A","Skempton A","-",0.7),u("B","Skempton B","-",1)],v=>outputsFromObject({"Δu":{value:v.B*(v.dSigma3+v.A*(v.dSigma1-v.dSigma3)),unit:"kPa"}}),"Δu=B[Δσ3+A(Δσ1−Δσ3)]"));
+  C.push(calc("stress-path","Stress increment invariants", "consolidation", "Compute mean total stress p and deviatoric stress q for triaxial-style states.",[u("s1","σ1","kPa",300,0),u("s2","σ2","kPa",180,0),u("s3","σ3","kPa",100,0)],v=>outputsFromObject({"Mean stress p":{value:(v.s1+v.s2+v.s3)/3,unit:"kPa"},"Deviator stress q":{value:v.s1-v.s3,unit:"kPa"},"Octahedral shear stress":{value:Math.sqrt(((v.s1-v.s2)**2+(v.s2-v.s3)**2+(v.s3-v.s1)**2)/3)/3,unit:"kPa"}}),"p=(σ1+σ2+σ3)/3; q=σ1−σ3"));
+  C.push(calc("ocr","Overconsolidation ratio", "consolidation", "Compute OCR from preconsolidation and current effective stress.",[u("sigmap","Preconsolidation stress","kPa",180,0),u("sigma0","Current effective stress","kPa",90,0)],v=>outputsFromObject({"OCR":{value:v.sigmap/v.sigma0,unit:"-"},"State":{value:v.sigmap/v.sigma0>1.05?"Overconsolidated":v.sigmap/v.sigma0<0.95?"Potentially normally consolidated":"Near NC boundary",unit:""}}),"OCR=σ′p/σ′0"));
+
+  // Shallow foundations (12)
+  function bearingFactors(phiDeg) { const ph=rad(phiDeg); const Nq=Math.exp(PI*Math.tan(ph))*Math.pow(Math.tan(PI/4+ph/2),2); const Nc=Math.abs(phiDeg)<1e-8 ? 5.14 : (Nq-1)/Math.tan(ph); const Ngamma=2*(Nq+1)*Math.tan(ph); return {Nc,Nq,Ngamma}; }
+  C.push(calc("terzaghi-bearing-c", "Terzaghi ultimate bearing capacity - c-φ soil", "shallow", "Preliminary centered rectangular-footing bearing-capacity screening using Terzaghi-style terms.",[u("c","Cohesion c","kPa",20,0),u("phi","Friction angle φ","deg",30,0,89),u("gamma","Soil unit weight γ","kN/m³",18,0),u("B","Footing width B","m",2,0),u("L","Footing length L","m",3,0),u("D","Embedment depth Df","m",1.5,0)],v=>{const f=bearingFactors(v.phi); const qu=v.c*f.Nc+v.gamma*v.D*f.Nq+0.5*v.gamma*v.B*f.Ngamma; return outputsFromObject({"Nc":{value:f.Nc,unit:"-"},"Nq":{value:f.Nq,unit:"-"},"Nγ":{value:f.Ngamma,unit:"-"},"Ultimate qu":{value:qu,unit:"kPa"}});},"Terzaghi-style: qu=cNc+γDfNq+0.5γBNγ; exact factors/shape assumptions vary by method."));
+  C.push(calc("bearing-allowable","Allowable bearing pressure from FS", "shallow", "Convert ultimate bearing capacity to a gross/net allowable pressure using a simple factor of safety.",[u("qu","Ultimate bearing capacity","kPa",450,0),u("FS","Factor of safety","-",3,0),u("qover","Overburden at foundation level","kPa",27,0)],v=>outputsFromObject({"Gross allowable":{value:v.qu/v.FS,unit:"kPa"},"Net allowable (simple)":{value:v.qu/v.FS-v.qover,unit:"kPa"}}),"qallow,gross=qu/FS; qallow,net≈qu/FS−qover"));
+  C.push(calc("footing-area-bearing","Footing area from service load", "shallow", "Estimate footing area from service load and allowable net pressure.",[u("P","Service axial load","kN",1200,0),u("qallow","Allowable bearing pressure","kPa",150,0)],v=>outputsFromObject({"Required area":{value:v.P/v.qallow,unit:"m²"},"Square footing side":{value:Math.sqrt(v.P/v.qallow),unit:"m"}}),"A=P/qallow"));
+  C.push(calc("rectangular-footing-eccentric","Eccentric rectangular footing pressure", "shallow", "Compute qmax/qmin for uniaxial or biaxial eccentricity using linear pressure distribution.",[u("P","Axial load","kN",1200,0),u("B","Width B","m",2,0),u("L","Length L","m",2.5,0),u("ex","Eccentricity ex","m",0.20,0),u("ey","Eccentricity ey","m",0.10,0)],v=>{const qavg=v.P/(v.B*v.L); const qmax=qavg*(1+6*v.ex/v.B+6*v.ey/v.L); const qmin=qavg*(1-6*v.ex/v.B-6*v.ey/v.L); return outputsFromObject({"Average q":{value:qavg,unit:"kPa"},"qmax":{value:qmax,unit:"kPa"},"qmin":{value:qmin,unit:"kPa"},"Middle-third check":{value:(Math.abs(v.ex)<=v.B/6 && Math.abs(v.ey)<=v.L/6)?"Yes - no tensile soil pressure":"No - tensile-zone limitation triggered",unit:""}});},"q=P/BL[1±6ex/B±6ey/L] (linear elastic contact-pressure approximation)"));
+  C.push(calc("footing-overturning","Footing overturning FS", "shallow", "Compute resisting-to-overturning moment ratio for a simplified footing system.",[u("W","Total stabilizing weight","kN",800,0),u("xR","Resisting lever arm","m",1.0,0),u("H","Lateral load","kN",120,0),u("h","Lateral load height","m",2.0,0)],v=>outputsFromObject({"Resisting moment":{value:v.W*v.xR,unit:"kN·m"},"Overturning moment":{value:v.H*v.h,unit:"kN·m"},"FS":{value:v.W*v.xR/(v.H*v.h),unit:"-"}}),"FS=ΣMR/ΣMO"));
+  C.push(calc("footing-sliding","Footing sliding FS", "shallow", "Compute sliding resistance from base friction and an optional passive resistance term.",[u("W","Vertical load","kN",1500,0),u("mu","Base friction coefficient","-",0.45,0),u("Pp","Usable passive resistance","kN",100,0),u("H","Total lateral load","kN",250,0)],v=>outputsFromObject({"Resistance":{value:v.W*v.mu+v.Pp,unit:"kN"},"FS":{value:(v.W*v.mu+v.Pp)/v.H,unit:"-"}}),"FS=(μW+Pp)/H"));
+  C.push(calc("settlement-limited-pressure","Pressure from allowable settlement", "shallow", "Convert a chosen allowable settlement into a simplified pressure using an equivalent soil modulus.",[u("E","Equivalent constrained/elastic modulus","MPa",25,0),u("B","Footing width","m",2,0),u("Sallow","Allowable settlement","mm",25,0),u("Is","Influence factor","-",1,0)],v=>outputsFromObject({"Approx. pressure":{value:(v.Sallow/1000)*(v.E*1000)/(v.B*v.Is),unit:"kPa"}}),"q≈sE/(BIs)"));
+  C.push(calc("contact-pressure-average","Average footing contact pressure", "shallow", "Compute gross or net contact pressure from footing load.",[u("P","Foundation load","kN",1000,0),u("B","Footing width","m",2.0,0),u("L","Footing length","m",2.5,0),u("qnetSubtract","Net pressure subtraction","kPa",30,0)],v=>outputsFromObject({"Gross average q":{value:v.P/(v.B*v.L),unit:"kPa"},"Net average q":{value:v.P/(v.B*v.L)-v.qnetSubtract,unit:"kPa"}}),"qgross=P/A; qnet=qgross−qoverburden"));
+  C.push(calc("combined-footing-centroid","Combined footing resultant location", "shallow", "Locate the load resultant along a strip from two column loads.",[u("P1","Column load 1","kN",800,0),u("x1","x1 from origin","m",0,0),u("P2","Column load 2","kN",600,0),u("x2","x2 from origin","m",4,0)],v=>outputsFromObject({"Resultant load":{value:v.P1+v.P2,unit:"kN"},"Resultant location xR":{value:(v.P1*v.x1+v.P2*v.x2)/(v.P1+v.P2),unit:"m"}}),"xR=ΣPixi/ΣPi"));
+  C.push(calc("mat-average-pressure","Mat foundation average pressure", "shallow", "Estimate average mat pressure from superstructure load, mat self-weight and area.",[u("P","Column/service load","kN",6000,0),u("Wmat","Mat self-weight","kN",1200,0),u("A","Mat area","m²",80,0)],v=>outputsFromObject({"Average contact pressure":{value:(v.P+v.Wmat)/v.A,unit:"kPa"}}),"q=(P+Wmat)/A"));
+  C.push(calc("footing-volume","Footing concrete volume", "shallow", "Compute isolated rectangular footing concrete quantity.",[u("B","Width","m",2,0),u("L","Length","m",2.2,0),u("t","Thickness","m",0.45,0)],v=>outputsFromObject({"Concrete volume":{value:v.B*v.L*v.t,unit:"m³"}}),"V=BLt"));
+  C.push(calc("foundation-bearing-capacity-ratio","Bearing demand ratio", "shallow", "Compare applied pressure with allowable or ultimate capacity.",[u("q","Applied pressure","kPa",130,0),u("qAllow","Allowable pressure","kPa",180,0)],v=>outputsFromObject({"Utilization":{value:v.q/v.qAllow*100,unit:"%"},"Reserve":{value:v.qAllow-v.q,unit:"kPa"}}),"Utilization=q/qallow"));
+
+  // Deep foundations (12)
+  C.push(calc("pile-end-bearing","Single pile end-bearing capacity", "deep", "Estimate pile base resistance from undrained su or c-φ style inputs.",[u("Ab","Pile base area","m²",0.283,0),u("qu","Ultimate unit end bearing","kPa",1200,0)],v=>outputsFromObject({"Qb":{value:v.Ab*v.qu,unit:"kN"}}),"Qb=Ab qb"));
+  C.push(calc("pile-skin","Pile shaft friction", "deep", "Compute shaft resistance from layer unit skin friction or α-method average.",[u("perim","Pile perimeter","m",3.14,0),u("L","Embedded length","m",15,0),u("fs","Average unit shaft resistance","kPa",45,0)],v=>outputsFromObject({"Qs":{value:v.perim*v.L*v.fs,unit:"kN"}}),"Qs=πD L fs for a circular pile"));
+  C.push(calc("pile-ultimate-total","Pile ultimate geotechnical capacity", "deep", "Combine end-bearing and shaft resistance.",[u("Qb","End bearing","kN",350,0),u("Qs","Shaft resistance","kN",700,0)],v=>outputsFromObject({"Qu":{value:v.Qb+v.Qs,unit:"kN"}}),"Qu=Qb+Qs"));
+  C.push(calc("pile-allowable","Pile allowable load", "deep", "Apply factor of safety to an ultimate pile resistance.",[u("Qu","Ultimate geotechnical resistance","kN",1200,0),u("FS","Factor of safety","-",2.5,0)],v=>outputsFromObject({"Allowable load":{value:v.Qu/v.FS,unit:"kN"}}),"Qallow=Qu/FS"));
+  C.push(calc("pile-qa-su-alpha","α-method pile shaft resistance", "deep", "Estimate cohesive pile shaft resistance from α su.",[u("alpha","Adhesion factor α","-",0.70,0,2),u("su","Undrained shear strength","kPa",60,0),u("perim","Pile perimeter","m",3.14,0),u("L","Embedded length","m",15,0)],v=>outputsFromObject({"Unit shaft resistance fs":{value:v.alpha*v.su,unit:"kPa"},"Total shaft resistance Qs":{value:v.alpha*v.su*v.perim*v.L,unit:"kN"}}),"fs=αsu; Qs=fsAs"));
+  C.push(calc("pile-beta-method","β-method pile shaft resistance", "deep", "Estimate effective-stress shaft resistance using a β coefficient.",[u("beta","β coefficient","-",0.30,0),u("sigmaV","Average effective overburden stress","kPa",150,0),u("perim","Pile perimeter","m",3.14,0),u("L","Pile length","m",15,0)],v=>outputsFromObject({"fs":{value:v.beta*v.sigmaV,unit:"kPa"},"Qs":{value:v.beta*v.sigmaV*v.perim*v.L,unit:"kN"}}),"fs=βσ′v; Qs=fsAs"));
+  C.push(calc("pile-group-converse-labare","Pile-group efficiency - Converse-Labarre", "deep", "Estimate group efficiency for equally spaced piles using a simplified Converse-Labarre expression.",[u("n","Number of piles","-",9,1),u("m","Rows","-",3,1),u("nrow","Piles per row","-",3,1),u("D","Pile diameter","m",0.3,0),u("s","Center spacing","m",0.9,0)],v=>{ const theta=Math.atan(v.D/v.s); const Eg=1-(theta*180/PI)*((v.m-1)/v.m+(v.nrow-1)/v.nrow)/90; return outputsFromObject({"Approx. group efficiency Eg":{value:Eg,unit:"-"},"Group capacity multiplier":{value:Eg*v.n,unit:"single-pile equivalents"}});},"Eg≈1−θ[(m−1)/m+(n−1)/n]/90, θ in degrees; use the governing group method for design."));
+  C.push(calc("pile-group-capacity","Pile group capacity by sum", "deep", "Combine number of piles with allowable individual pile capacity and a group efficiency.",[u("n","Number of piles","-",9,1),u("Qallow","Allowable single-pile load","kN",500,0),u("Eg","Group efficiency","-",0.85,0,1)],v=>outputsFromObject({"Group allowable load":{value:v.n*v.Qallow*v.Eg,unit:"kN"}}),"Qgroup= n Qallow Eg"));
+  C.push(calc("pile-block","Pile group block capacity", "deep", "Estimate block capacity from base area and perimeter shear.",[u("Bg","Group block width","m",3,0),u("Lg","Group block length","m",3,0),u("qub","Unit base resistance","kPa",800,0),u("fs","Average shaft friction","kPa",35,0),u("D","Embedded depth","m",12,0)],v=>{ const Ab=v.Bg*v.Lg, As=2*(v.Bg+v.Lg)*v.D; return outputsFromObject({"Base resistance":{value:Ab*v.qub,unit:"kN"},"Shaft resistance":{value:As*v.fs,unit:"kN"},"Block capacity":{value:Ab*v.qub+As*v.fs,unit:"kN"}});},"Qblock=Ab qb + As fs"));
+  C.push(calc("negative-skin-friction","Negative skin friction dragload", "deep", "Estimate downdrag from an average negative shaft stress.",[u("perim","Pile perimeter","m",3.14,0),u("Ldrag","Drag length","m",8,0),u("qneg","Negative unit skin friction","kPa",25,0)],v=>outputsFromObject({"Drag load Qneg":{value:v.perim*v.Ldrag*v.qneg,unit:"kN"}}),"Qneg=As,drag qneg"));
+  C.push(calc("pile-settlement-elastic","Pile elastic settlement", "deep", "Simplified elastic pile settlement estimate from load, length and area.",[u("P","Pile load","kN",500,0),u("L","Pile length","m",15,0),u("A","Pile area","m²",0.071,0),u("E","Pile modulus","GPa",30,0)],v=>outputsFromObject({"Elastic shortening":{value:v.P*1000*v.L/(v.A*v.E*1e9)*1000,unit:"mm"}}),"s=PL/AE"));
+  C.push(calc("pile-tension","Pile uplift from shaft resistance", "deep", "Estimate uplift resistance from shaft adhesion and pile self-weight.",[u("Qs","Ultimate shaft adhesion","kN",600,0),u("Wp","Pile self-weight","kN",80,0),u("FS","Factor of safety","-",2,0)],v=>outputsFromObject({"Allowable uplift":{value:(v.Qs+v.Wp)/v.FS,unit:"kN"}}),"Qallow,up=(Qs+Wp)/FS"));
+  C.push(calc("pile-dynamic-rd","Pile penetration log-energy screening", "deep", "Organize a simple field energy index; not a substitute for a calibrated dynamic pile formula or load test.",[u("Ehammer","Hammer energy","kN·m",30,0),u("set","Permanent set per blow","mm",5,0),u("eta","Overall efficiency","%",70,0)],v=>outputsFromObject({"Energy per unit penetration":{value:v.Ehammer*1000*(v.eta/100)/(v.set/1000),unit:"N"},"Screening cue":{value:v.set<2?"Very small set - verify refusal/set criteria":"Use actual dynamic analysis / load test",unit:""}}),"E·η/s is an energy-per-penetration index, not a final capacity formula."));
+
+  // Retaining (10)
+  C.push(calc("rankine-active","Rankine active earth pressure coefficient", "retaining", "Compute Ka for a level-backfill, vertical smooth-wall screening condition.",[u("phi","Friction angle φ","deg",30,0,89)],v=>{ const Ka=Math.tan(rad(45-v.phi/2))**2; const Kp=1/Ka; return outputsFromObject({"Ka":{value:Ka,unit:"-"},"Kp":{value:Kp,unit:"-"}});},"Ka=tan²(45−φ/2); Kp=1/Ka"));
+  C.push(calc("active-force","Active earth force triangular distribution", "retaining", "Compute active resultant from soil unit weight and wall height.",[u("gamma","Soil unit weight","kN/m³",18,0),u("H","Wall height","m",4,0),u("Ka","Active coefficient Ka","-",0.333,0)],v=>outputsFromObject({"Base pressure σh":{value:v.Ka*v.gamma*v.H,unit:"kPa"},"Resultant force Pa":{value:0.5*v.Ka*v.gamma*v.H*v.H,unit:"kN/m"},"Line of action":{value:v.H/3,unit:"m above base"}}),"Pa=0.5KaγH²"));
+  C.push(calc("passive-force","Passive earth force", "retaining", "Compute passive resultant from soil unit weight and wall height.",[u("gamma","Soil unit weight","kN/m³",18,0),u("H","Wall height","m",4,0),u("Kp","Passive coefficient Kp","-",3,0)],v=>outputsFromObject({"Passive base pressure":{value:v.Kp*v.gamma*v.H,unit:"kPa"},"Passive resultant Pp":{value:0.5*v.Kp*v.gamma*v.H*v.H,unit:"kN/m"}}),"Pp=0.5KpγH²"));
+  C.push(calc("water-pressure-wall","Hydrostatic wall water force", "retaining", "Compute hydrostatic force behind a wall or basement.",[u("gammaW","Water unit weight","kN/m³",9.81,0),u("Hw","Water depth","m",3,0)],v=>outputsFromObject({"Base water pressure":{value:v.gammaW*v.Hw,unit:"kPa"},"Resultant water force":{value:0.5*v.gammaW*v.Hw*v.Hw,unit:"kN/m"}}),"Pw=0.5γwHw²"));
+  C.push(calc("surcharge-force","Uniform surcharge active force", "retaining", "Compute lateral force from a uniform surcharge.",[u("q","Uniform surcharge","kPa",15,0),u("Ka","Ka","-",0.33,0),u("H","Wall height","m",4,0)],v=>outputsFromObject({"Lateral pressure":{value:v.Ka*v.q,unit:"kPa"},"Resultant force":{value:v.Ka*v.q*v.H,unit:"kN/m"},"Line of action":{value:v.H/2,unit:"m above base"}}),"Ps=Ka q H"));
+  C.push(calc("retaining-overturning","Retaining-wall overturning FS", "retaining", "Compute restoring moment against active earth-pressure overturning moment.",[u("MR","Restoring moment","kN·m/m",250,0),u("Pa","Active force","kN/m",120,0),u("z","Pa lever arm","m",1.33,0)],v=>outputsFromObject({"Overturning moment":{value:v.Pa*v.z,unit:"kN·m/m"},"FS":{value:v.MR/(v.Pa*v.z),unit:"-"}}),"FS=MR/MO"));
+  C.push(calc("retaining-sliding","Retaining wall sliding FS", "retaining", "Compare friction plus permitted passive resistance to lateral actions.",[u("V","Total vertical load","kN/m",350,0),u("mu","Base friction coefficient","-",0.45,0),u("Pp","Permitted passive resistance","kN/m",40,0),u("Pa","Active + surcharge force","kN/m",120,0)],v=>outputsFromObject({"Resistance":{value:v.V*v.mu+v.Pp,unit:"kN/m"},"FS":{value:(v.V*v.mu+v.Pp)/v.Pa,unit:"-"}}),"FS=(μV+Pp)/Pa"));
+  C.push(calc("retaining-base-eccentricity","Retaining base resultant eccentricity", "retaining", "Compute resultant location relative to center from net moments.",[u("V","Total vertical load","kN/m",400,0),u("Mnet","Net moment about center","kN·m/m",50,-1e9,1e9)],v=>outputsFromObject({"Eccentricity e":{value:v.Mnet/v.V,unit:"m"},"Middle-third criterion":{value:Math.abs(v.Mnet/v.V)<=2?"Depends on base width; compare |e|≤B/6":"Check base width",unit:""}}),"e=Mnet/V"));
+  C.push(calc("retaining-culmann","Retaining backfill slope coefficient screening", "retaining", "Approximate active pressure coefficient for a sloping backfill under a simplified Rankine-type cue.",[u("phi","Soil friction angle","deg",30,0,89),u("beta","Backfill slope angle","deg",10,-45,45)],v=>{ const ph=rad(v.phi), b=rad(v.beta); if(v.beta>=v.phi) throw new Error("Backfill slope angle should be below φ for this simplified screen."); const Ka=Math.cos(b)*(Math.cos(b)-Math.sqrt(Math.cos(b)**2-Math.cos(ph)**2))/(Math.cos(b)+Math.sqrt(Math.cos(b)**2-Math.cos(ph)**2)); return outputsFromObject({"Approx. Ka":{value:Ka,unit:"-"}});},"Use a governing active-pressure method for sloping backfill; coefficient above is a simplified screen."));
+  C.push(calc("retaining-seepage","Seepage uplift below retaining structure", "retaining", "Approximate uniform uplift force from groundwater head under a base.",[u("gammaW","Water unit weight","kN/m³",9.81,0),u("H","Hydraulic head difference","m",2,0),u("B","Base width","m",5,0)],v=>outputsFromObject({"Uplift pressure":{value:v.gammaW*v.H,unit:"kPa"},"Uplift resultant":{value:v.gammaW*v.H*v.B,unit:"kN/m"}}),"u=γwH; U=uB"));
+  C.push(calc("retaining-wall-material","Retaining wall volume", "retaining", "Compute simple stem/base wall material quantities.",[u("B","Base width","m",2.5,0),u("L","Wall length","m",10,0),u("t","Average base thickness","m",0.45,0),u("H","Stem height","m",4,0),u("ts","Average stem thickness","m",0.30,0)],v=>outputsFromObject({"Base volume":{value:v.B*v.L*v.t,unit:"m³"},"Stem volume":{value:v.ts*v.L*v.H,unit:"m³"},"Approx. concrete":{value:v.B*v.L*v.t+v.ts*v.L*v.H,unit:"m³"}}),"V=BLt + tsLH"));
+
+  // Slope (10)
+  C.push(calc("infinite-slope-cohesive","Infinite slope FS - c-φ soil", "slope", "Simple infinite-slope factor of safety for a homogeneous shallow failure plane.",[u("c","Cohesion c′","kPa",10,0),u("gamma","Unit weight","kN/m³",18,0),u("z","Failure depth normal to surface","m",2,0),u("beta","Slope angle β","deg",20,0,89),u("phi","Friction angle φ′","deg",28,0,89),u("ru","Pore-pressure ratio ru","-",0.1,0,1)],v=>{ const W=v.gamma*v.z; const resisting=v.c+((W*Math.cos(rad(v.beta))**2)*(1-v.ru))*tand(v.phi); const driving=W*Math.sin(rad(v.beta))*Math.cos(rad(v.beta)); return outputsFromObject({"FS":{value:resisting/driving,unit:"-"},"Driving shear":{value:driving,unit:"kPa"}});},"FS≈[c′+(γz cos²β)(1−ru)tanφ′]/[γz sinβ cosβ]"));
+  C.push(calc("infinite-slope-sand","Infinite slope FS - dry cohesionless", "slope", "Simple dry-sand infinite-slope factor of safety.",[u("phi","Friction angle","deg",32,0,89),u("beta","Slope angle","deg",20,0,89)],v=>outputsFromObject({"FS":{value:tand(v.phi)/tand(v.beta),unit:"-"}}),"FS=tanφ/tanβ"));
+  C.push(calc("slope-angle-from-fs","Slope angle for target FS", "slope", "Estimate the maximum angle for a dry cohesionless infinite slope at target FS.",[u("phi","Friction angle","deg",32,0,89),u("FS","Target factor of safety","-",1.5,0)],v=>outputsFromObject({"Maximum β":{value:deg(Math.atan(tand(v.phi)/v.FS)),unit:"deg"}}),"tanβ=tanφ/FS"));
+  C.push(calc("slope-geometry","Slope ratio ↔ angle", "slope", "Convert vertical:horizontal slope ratio to angle and percent grade.",[u("V","Vertical rise","m",1,0),u("H","Horizontal run","m",2.5,0)],v=>{ const angle=deg(Math.atan(v.V/v.H)); return outputsFromObject({"Slope angle":{value:angle,unit:"deg"},"Percent grade":{value:v.V/v.H*100,unit:"%"},"1V:H ratio":{value:v.H/v.V,unit:"-"}});},"β=atan(V/H); grade=100V/H"));
+  C.push(calc("slope-weighted-avg","Weighted soil parameter", "slope", "Compute a weighted average property across soil layers.",[u("p1","Property layer 1","kPa",30,0),u("t1","Thickness layer 1","m",2,0),u("p2","Property layer 2","kPa",50,0),u("t2","Thickness layer 2","m",3,0),u("p3","Property layer 3","kPa",80,0),u("t3","Thickness layer 3","m",5,0)],v=>outputsFromObject({"Weighted average":{value:(v.p1*v.t1+v.p2*v.t2+v.p3*v.t3)/(v.t1+v.t2+v.t3),unit:"same as input"}}),"pavg=Σpi ti/Σti"));
+  C.push(calc("slope-runout-height","Vertical drop from slope length", "slope", "Compute vertical rise/drop from slope length and angle.",[u("L","Slope length","m",20,0),u("beta","Slope angle","deg",25,0,89)],v=>outputsFromObject({"Vertical drop":{value:v.L*sind(v.beta),unit:"m"},"Horizontal run":{value:v.L*cosd(v.beta),unit:"m"}}),"V=Lsinβ; H=Lcosβ"));
+  C.push(calc("slope-bishop-screen","Simplified circular-slip resistance screen", "slope", "Very simplified slice-based resistance-to-driving ratio for a representative slip surface; use actual Bishop/Spencer software for design.",[u("c","Average c′","kPa",12,0),u("phi","Average φ′","deg",25,0,89),u("N","Total effective normal force","kN",3000,0),u("T","Total driving shear force","kN",1800,0)],v=>outputsFromObject({"Resisting shear capacity":{value:v.c+v.N/100*tand(v.phi),unit:"kN-like screening"},"FS screen":{value:(v.c+v.N/100*tand(v.phi))/v.T,unit:"-"}}),"Illustrative screening only; slice geometry and pore pressures must be explicit in real slope analysis."));
+  C.push(calc("slope-height-horizontal","Horizontal run from height and ratio", "slope", "Calculate horizontal run for a specified slope ratio.",[u("H","Vertical height","m",5,0),u("ratio","Horizontal:vertical ratio","-",2.5,0)],v=>outputsFromObject({"Horizontal run":{value:v.H*v.ratio,unit:"m"},"Slope angle":{value:deg(Math.atan(1/v.ratio)),unit:"deg"}}),"Run=H·ratio"));
+  C.push(calc("factor-safety-general","Generic resistance / driving FS", "slope", "Compare total available resistance with driving demand.",[u("R","Available resistance","kN",2500,0),u("D","Driving demand","kN",1600,0)],v=>outputsFromObject({"FS":{value:v.R/v.D,unit:"-"},"Reserve":{value:v.R-v.D,unit:"kN"}}),"FS=R/D"));
+  C.push(calc("slope-water-force","Slope water force", "slope", "Estimate hydrostatic thrust per unit width from a surface water pond or surcharge-like head.",[u("gammaW","Water unit weight","kN/m³",9.81,0),u("H","Water depth","m",2,0)],v=>outputsFromObject({"Base pressure":{value:v.gammaW*v.H,unit:"kPa"},"Resultant":{value:0.5*v.gammaW*v.H*v.H,unit:"kN/m"}}),"P=0.5γwH²"));
+
+  // Investigation / SPT / CPT (12)
+  C.push(calc("spt-n60","SPT N60 energy correction", "investigation", "Normalize field SPT N using hammer efficiency and standard correction factors.",[u("Nfield","Field SPT N","blows/30 cm",18,0),u("ER","Energy ratio","%",60,0),u("CB","Borehole diameter factor CB","-",1.0,0),u("CR","Rod-length factor CR","-",0.9,0),u("CS","Sampler factor CS","-",1.0,0)],v=>{ const N60=v.Nfield*(v.ER/60)*v.CB*v.CR*v.CS; return outputsFromObject({"N60":{value:N60,unit:"blows/30 cm"},"Energy-normalized ratio":{value:N60/v.Nfield,unit:"×"}});},"N60=Nfield(ER/60)CBCRCS; correction conventions must match the selected standard/reference."));
+  C.push(calc("spt-n160","SPT (N1)60 overburden-normalized", "investigation", "Compute an effective-stress normalized SPT value using a user-supplied CN factor.",[u("N60","N60","blows/30 cm",18,0),u("CN","Overburden correction CN","-",1.4,0)],v=>outputsFromObject({"(N1)60":{value:v.N60*v.CN,unit:"blows/30 cm"}}),"(N1)60=CN·N60"));
+  C.push(calc("spt-refusal","SPT refusal / blow-count index", "investigation", "Convert a partial penetration record into an equivalent blows-per-length index.",[u("blows","Recorded blows","blows",50,0),u("penetration","Penetration achieved","mm",120,0)],v=>outputsFromObject({"Blows per 300 mm equivalent":{value:v.blows*(300/v.penetration),unit:"blows/300 mm"}}),"N300 = N × 300/penetration"));
+  C.push(calc("cpt-friction-ratio","CPT sleeve friction ratio", "investigation", "Compute normalized friction ratio from cone resistance and sleeve friction.",[u("qc","Cone resistance qc","MPa",8,0),u("fs","Sleeve friction fs","kPa",80,0)],v=>outputsFromObject({"Rf":{value:v.fs/(v.qc*1000)*100,unit:"%"}}),"Rf=fs/qc×100"));
+  C.push(calc("cpt-qt","CPT corrected tip resistance", "investigation", "Correct qc for unequal area ratio and pore pressure using a standard form.",[u("qc","Measured cone resistance qc","MPa",8,0),u("u2","Pore pressure u2","MPa",0.2,0),u("a","Area ratio a","-",0.80,0,1)],v=>outputsFromObject({"Corrected qt":{value:v.qc+v.u2*(1-v.a),unit:"MPa"}}),"qt=qc+u2(1−a)"));
+  C.push(calc("cpt-vertical-stress","CPT normalized cone resistance", "investigation", "Normalize qt by vertical total or effective stress.",[u("qt","Corrected qt","MPa",8,0),u("sigmaV","Vertical total stress","kPa",150,0),u("u","Pore pressure","kPa",50,0)],v=>{ const qtkPa=v.qt*1000; return outputsFromObject({"Qt(total)":{value:(qtkPa-v.sigmaV)/v.sigmaV,unit:"-"},"Qtn(effective denominator)":{value:(qtkPa-v.sigmaV)/(v.sigmaV-v.u),unit:"-"}});},"Qt=(qt−σv)/σv; Qtn=(qt−σv)/σ′v"));
+  C.push(calc("pressuremeter-limit","Pressuremeter cavity pressure index", "investigation", "Compute net limit pressure from measured cavity pressure and in-situ horizontal stress.",[u("pl","Limit pressure","MPa",1.5,0),u("p0","Initial pressure","MPa",0.10,0)],v=>outputsFromObject({"Net limit pressure":{value:v.pl-v.p0,unit:"MPa"}}),"pL*=pL−p0"));
+  C.push(calc("vane-shear","Vane shear undrained strength", "investigation", "Compute su from torque, vane geometry and a standard rectangular/circular expression.",[u("T","Peak torque","N·m",120,0),u("D","Vane diameter","m",0.05,0),u("H","Vane height","m",0.10,0)],v=>{ const su=TtoSu(v.T,v.D,v.H); return outputsFromObject({"su":{value:su,unit:"Pa"},"su":{value:su/1000,unit:"kPa"}}); function TtoSu(T,D,H){ return T/(PI*D*D*(H/2+D/6)); } },"T = π su D²(H/2 + D/6) for the common rectangular-blade idealization"));
+  C.push(calc("plate-load-net-pressure","Plate-load pressure", "investigation", "Compute gross/net test pressure from load and plate area.",[u("P","Applied load","kN",400,0),u("B","Plate width","m",0.30,0),u("D","Plate length","m",0.30,0),u("q0","Initial overburden pressure","kPa",20,0)],v=>outputsFromObject({"Gross pressure":{value:v.P/(v.B*v.D),unit:"kPa"},"Net pressure":{value:v.P/(v.B*v.D)-v.q0,unit:"kPa"}}),"q=P/A; qnet=q−q0"));
+  C.push(calc("field-density-sand-cone","Sand-cone field density", "investigation", "Compute field density from hole volume and excavated moist mass.",[u("Ms","Moist excavated soil mass","kg",18,0),u("Vh","Hole volume","m³",0.010,0),u("w","Water content","%",12,0)],v=>{ const rho=v.Ms/v.Vh; return outputsFromObject({"Bulk density":{value:rho,unit:"kg/m³"},"Dry density":{value:rho/(1+v.w/100),unit:"kg/m³"},"Dry unit weight":{value:rho*G/1000/(1+v.w/100),unit:"kN/m³"}});},"ρ=Ms/Vh; ρd=ρ/(1+w)"));
+  C.push(calc("core-density","Core density and saturation", "investigation", "Compute bulk density from an intact core and optional water content.",[u("Mwet","Wet mass","kg",2.1,0),u("V","Core volume","m³",0.001,0),u("w","Water content","%",10,0)],v=>outputsFromObject({"Bulk density":{value:v.Mwet/v.V,unit:"kg/m³"},"Dry density":{value:(v.Mwet/v.V)/(1+v.w/100),unit:"kg/m³"}}),"ρbulk=Mwet/V"));
+  C.push(calc("settlement-plate-load","Plate load settlement modulus", "investigation", "Compute a secant modulus from plate pressure and measured settlement.",[u("q","Pressure increment","kPa",150,0),u("s","Settlement","mm",8,0),u("B","Plate width","m",0.30,0)],v=>outputsFromObject({"Secant modulus q/s":{value:v.q/(v.s/1000),unit:"kPa/m"},"Pressure / settlement":{value:v.q/(v.s/1000),unit:"kPa/m"},"qB/s":{value:v.q*v.B/(v.s/1000),unit:"kPa"}}),"E≈q/s; scale factors for foundation size require the selected interpretation method."));
+
+  // Seismic / liquefaction (7)
+  C.push(calc("seismic-site-vs30","Vs30 weighted average", "seismic", "Compute time-average shear-wave velocity over 30 m or a specified profile depth.",[u("d1","Layer 1 thickness","m",5,0),u("vs1","Vs layer 1","m/s",150,0),u("d2","Layer 2 thickness","m",10,0),u("vs2","Vs layer 2","m/s",220,0),u("d3","Layer 3 thickness","m",15,0),u("vs3","Vs layer 3","m/s",350,0)],v=>outputsFromObject({"Vs30-style average":{value:30/(v.d1/v.vs1+v.d2/v.vs2+v.d3/v.vs3),unit:"m/s"}}),"Vs,avg = Σd / Σ(d/Vs)"));
+  C.push(calc("liquefaction-csr","Simplified cyclic stress ratio", "seismic", "Estimate CSR from a simplified Seed/Idriss-style stress-ratio expression using user coefficients.",[u("amax","Peak ground acceleration","g",0.30,0),u("sigmaV","Total vertical stress","kPa",200,0),u("sigmaEff","Effective vertical stress","kPa",120,0),u("rd","Stress reduction factor rd","-",0.9,0,2),u("MSF","Magnitude scaling factor","-",1,0.1)],v=>outputsFromObject({"CSR":{value:0.65*v.amax*(v.sigmaV/v.sigmaEff)*v.rd/v.MSF,unit:"-"}}),"CSR≈0.65(am ax/g)(σv/σ′v)rd/MSF; actual liquefaction procedures require calibrated code/model inputs."));
+  C.push(calc("liquefaction-crr-factor","Cyclic resistance ratio comparison", "seismic", "Compare a user-supplied CRR with CSR and calculate a screening factor.",[u("CRR","Cyclic resistance ratio","-",0.20,0),u("CSR","Cyclic stress ratio","-",0.15,0)],v=>outputsFromObject({"FS against liquefaction":{value:v.CRR/v.CSR,unit:"-"},"Margin CRR−CSR":{value:v.CRR-v.CSR,unit:"-"},"Screen":{value:v.CRR/v.CSR>=1.1?"Screening pass":"Potential triggering - requires detailed evaluation",unit:""}}),"FSliq=CRR/CSR"));
+  C.push(calc("seismic-liquefaction-correction","N-value liquefaction normalization screen", "seismic", "Apply a user-supplied fines correction and energy normalization to an SPT value.",[u("N160","(N1)60","blows/30 cm",15,0),u("deltaNcs","Fines correction ΔNcs","blows/30 cm",2,0)],v=>outputsFromObject({"Clean-sand equivalent (N1)60cs":{value:v.N160+v.deltaNcs,unit:"blows/30 cm"}}),"(N1)60cs≈(N1)60+ΔNcs"));
+  C.push(calc("site-period","Site fundamental period", "seismic", "Estimate a first-mode period from a user-supplied empirical coefficient and building height.",[u("Ct","Empirical Ct","s/m^(3/4)",0.0466,0),u("H","Height","m",30,0),u("x","Exponent x","-",0.9,0)],v=>outputsFromObject({"Period T":{value:v.Ct*Math.pow(v.H,v.x),unit:"s"},"Frequency":{value:1/(v.Ct*Math.pow(v.H,v.x)),unit:"Hz"}}),"T=CtH^x"));
+  C.push(calc("seismic-lateral-force","Equivalent lateral force", "seismic", "Compute a total lateral force from seismic coefficient and effective weight.",[u("Cs","Seismic coefficient","-",0.12,0),u("W","Seismic effective weight","kN",20000,0)],v=>outputsFromObject({"Base shear V":{value:v.Cs*v.W,unit:"kN"}}),"V=CsW"));
+  C.push(calc("seismic-story-distribution","Seismic story force distribution", "seismic", "Distribute total base shear by height-weight participation.",[u("V","Base shear","kN",5000,0),u("W1","Story 1 weight","kN",3000,0),u("h1","Story 1 height","m",3,0),u("W2","Story 2 weight","kN",3000,0),u("h2","Story 2 height","m",6,0),u("W3","Story 3 weight","kN",2500,0),u("h3","Story 3 height","m",9,0)],v=>{ const den=v.W1*v.h1+v.W2*v.h2+v.W3*v.h3; return outputsFromObject({"F1":{value:v.V*v.W1*v.h1/den,unit:"kN"},"F2":{value:v.V*v.W2*v.h2/den,unit:"kN"},"F3":{value:v.V*v.W3*v.h3/den,unit:"kN"}});},"Fi=V Wi hi/Σ(Wjhj)"));
+
+  // Rock (8)
+  C.push(calc("rock-rqd","Rock quality designation RQD", "rock", "Compute RQD from core runs by summing pieces longer than 10 cm.",[u("Llong","Sum of pieces ≥100 mm","m",7.5,0),u("Lrun","Total core run","m",10,0)],v=>outputsFromObject({"RQD":{value:v.Llong/v.Lrun*100,unit:"%"},"Quality cue":{value:v.Llong/v.Lrun>=0.9?"Excellent":v.Llong/v.Lrun>=0.75?"Good":v.Llong/v.Lrun>=0.5?"Fair":v.Llong/v.Lrun>=0.25?"Poor":"Very poor",unit:""}}),"RQD=Σ(core pieces >100 mm)/core run×100"));
+  C.push(calc("rock-ucs","Rock uniaxial compressive strength", "rock", "Compute UCS from peak load and core specimen area.",[u("P","Peak load","kN",250,0),u("D","Core diameter","mm",50,0)],v=>{ const A=PI*(v.D/1000)**2/4; return outputsFromObject({"UCS":{value:v.P/A/1000,unit:"MPa"},"Area":{value:A,unit:"m²"}});},"σc=P/A"));
+  C.push(calc("rock-rmr","Simplified RMR score", "rock", "Add common RMR component scores for a preliminary rock-mass-quality index.",[u("ucs","UCS score","points",10,0),u("rqd","RQD score","points",15,0),u("spacing","Discontinuity spacing score","points",10,0),u("condition","Discontinuity condition score","points",18,0),u("water","Groundwater score","points",7,0)],v=>{ const R=v.ucs+v.rqd+v.spacing+v.condition+v.water; return outputsFromObject({"RMR basic":{value:R,unit:"points"},"Class cue":{value:R>=81?"I - very good":R>=61?"II - good":R>=41?"III - fair":R>=21?"IV - poor":"V - very poor",unit:""}});},"RMRbasic = Σ component ratings; exact ratings and orientation adjustment must follow the selected RMR system."));
+  C.push(calc("rock-q-system","Q-system screening", "rock", "Compute the Barton Q rock-mass index from RQD, joint-set, roughness, alteration and water ratios.",[u("RQD","RQD","%",70,0,100),u("Jn","Joint set number Jn","-",9,0),u("Jr","Joint roughness Jr","-",2,0),u("Ja","Joint alteration Ja","-",2,0),u("Jw","Water reduction Jw","-",1,0),u("SRF","Stress reduction factor","-",2,0)],v=>outputsFromObject({"Q":{value:(v.RQD/v.Jn)*(v.Jr/v.Ja)*(v.Jw/v.SRF),unit:"-"}}),"Q=(RQD/Jn)(Jr/Ja)(Jw/SRF)"));
+  C.push(calc("rock-overburden","Rock overburden pressure", "rock", "Estimate vertical stress from rock density and overburden depth.",[u("rho","Rock density","kg/m³",2600,0),u("z","Depth","m",30,0)],v=>outputsFromObject({"Overburden stress":{value:v.rho*G*zToM(v.z)/1000,unit:"kPa"}})));
+  C.push(calc("rock-point-load","Point-load index", "rock", "Compute raw point-load index from peak load and platen distance.",[u("P","Peak load","kN",2.5,0),u("De","Equivalent core diameter or distance","mm",50,0)],v=>outputsFromObject({"Is":{value:v.P*1000/(v.De*v.De),unit:"MPa"}}),"Is=P/De² (simple dimensional form; correction to Is(50) depends on standard)"));
+  C.push(calc("rock-weathering","Weathering percentage cue", "rock", "Compute relative strength loss after weathering exposure.",[u("UCSfresh","Fresh UCS","MPa",80,0),u("UCSweathered","Weathered UCS","MPa",50,0)],v=>outputsFromObject({"Strength retention":{value:v.UCSweathered/v.UCSfresh*100,unit:"%"},"Strength loss":{value:(1-v.UCSweathered/v.UCSfresh)*100,unit:"%"}}),"Retention=UCSweathered/UCSfresh"));
+  C.push(calc("rock-joint-spacing","Joint frequency / spacing", "rock", "Convert joint count along a core or scanline into mean spacing.",[u("N","Joints counted","-",12,0),u("L","Measured length","m",3,0)],v=>outputsFromObject({"Mean spacing":{value:v.L/v.N,unit:"m"},"Joint frequency":{value:v.N/v.L,unit:"joints/m"}}),"s≈L/N"));
+
+  // Ground improvement (8)
+  C.push(calc("stone-column-replacement","Stone-column replacement ratio", "ground", "Compute area replacement ratio for a regular stone-column grid.",[u("D","Column diameter","m",0.8,0),u("s","Spacing","m",2.0,0),u("patternFactor","Pattern coefficient","-",1.05,0)],v=>{ const Ar=PI*(v.D*v.D)/4; const Atrib=v.s*v.s/v.patternFactor; return outputsFromObject({"Area replacement ratio":{value:Ar/Atrib*100,unit:"%"},"Column area":{value:Ar,unit:"m²"},"Tributary area":{value:Atrib,unit:"m²"}});},"Ar=πD²/4; as=Ar/Atrib"));
+  C.push(calc("prefabricated-drain-spacing","Vertical drain consolidation spacing", "ground", "Estimate a drain spacing from a desired influence diameter using a simple geometry ratio.",[u("De","Influence diameter","m",1.5,0),u("shapeFactor","Spacing ratio De/s","-",1.05,0)],v=>outputsFromObject({"Spacing":{value:v.De/v.shapeFactor,unit:"m"}}),"s≈De/shapeFactor; actual drain design requires consolidation theory and pattern factors."));
+  C.push(calc("geotextile-area","Geotextile quantity", "ground", "Estimate required geotextile area including overlap/waste.",[u("L","Length","m",100,0),u("W","Width","m",4,0),u("overlap","Overlap/waste","%",12,0)],v=>outputsFromObject({"Net area":{value:v.L*v.W,unit:"m²"},"Order area":{value:v.L*v.W*(1+v.overlap/100),unit:"m²"}}),"Aorder=LW(1+waste)"));
+  C.push(calc("grouting-volume","Grout quantity from treated volume", "ground", "Estimate injected grout volume from a treated soil volume and grout take.",[u("Vsoil","Treated soil volume","m³",200,0),u("ratio","Grout take","%",8,0)],v=>outputsFromObject({"Grout volume":{value:v.Vsoil*v.ratio/100,unit:"m³"},"Grout liters":{value:v.Vsoil*v.ratio/100*1000,unit:"L"}}),"Vg=Vsoil·ratio"));
+  C.push(calc("lime-stabilization","Stabilizer mass requirement", "ground", "Estimate dry additive mass for soil stabilization.",[u("Msoil","Dry soil mass","tonnes",100,0),u("dosage","Additive dosage","% dry mass",4,0)],v=>outputsFromObject({"Additive":{value:v.Msoil*v.dosage/100,unit:"tonnes"},"Bags @ 25 kg":{value:v.Msoil*v.dosage/100*1000/0.025,unit:"bags"}}),"Madd=Msoil·dosage"));
+  C.push(calc("vacuum-pressure-load","Vacuum consolidation pressure", "ground", "Estimate equivalent effective stress increment from an applied vacuum.",[u("vacuum","Vacuum pressure","kPa",60,0),u("efficiency","Transfer efficiency","%",85,0)],v=>outputsFromObject({"Effective pressure increment":{value:v.vacuum*v.efficiency/100,unit:"kPa"}}),"Δσ′≈vacuum×efficiency"));
+  C.push(calc("preload-embankment","Preload fill mass", "ground", "Estimate fill mass from preload footprint, height and unit weight.",[u("B","Width","m",20,0),u("L","Length","m",50,0),u("H","Preload height","m",2,0),u("gamma","Fill unit weight","kN/m³",18,0)],v=>outputsFromObject({"Preload volume":{value:v.B*v.L*v.H,unit:"m³"},"Preload weight":{value:v.B*v.L*v.H*v.gamma,unit:"kN"}}),"V=BLH; W=γV"));
+  C.push(calc("soil-mixing-volume","Deep soil mixing binder", "ground", "Estimate binder mass for a treated soil column volume.",[u("D","Column diameter","m",0.8,0),u("L","Column length","m",12,0),u("n","Number of columns","-",20,0),u("binder","Binder dosage","kg/m³ soil",120,0)],v=>{ const V=ncol(v.D,v.L,v.n); return outputsFromObject({"Treated volume":{value:V,unit:"m³"},"Binder":{value:V*v.binder,unit:"kg"}}); function ncol(D,L,n){return n*PI*D*D/4*L;}},"V=nπD²L/4; Mbinder=V·dosage"));
+
+  // QA/reference (9)
+  C.push(calc("factor-safety","General factor of safety", "field", "Compare resistance/capacity with demand.",[u("R","Resistance/capacity","kN",1800,0),u("D","Demand","kN",1200,0)],v=>outputsFromObject({"FS":{value:v.R/v.D,unit:"-"},"Utilization":{value:v.D/v.R*100,unit:"%"}}),"FS=R/D"));
+  C.push(calc("safety-margin","Capacity margin", "field", "Compute unused capacity and reserve percentage.",[u("Capacity","Capacity","kN",1800,0),u("Demand","Demand","kN",1200,0)],v=>outputsFromObject({"Reserve":{value:v.Capacity-v.Demand,unit:"kN"},"Reserve percentage":{value:(v.Capacity/v.Demand-1)*100,unit:"%"}}),"Margin=Capacity−Demand"));
+  C.push(calc("load-area-pressure","Pressure from force and area", "field", "Convert a force to average pressure.",[u("P","Force","kN",500,0),u("A","Area","m²",4,0)],v=>outputsFromObject({"Pressure":{value:v.P/v.A,unit:"kPa"}}),"q=P/A"));
+  C.push(calc("water-unit-conversion","Water head ↔ pressure", "field", "Convert water pressure to hydraulic head.",[u("p","Pressure","kPa",100,0),u("gammaW","Water unit weight","kN/m³",9.81,0)],v=>outputsFromObject({"Water head":{value:v.p/v.gammaW,unit:"m"}}),"h=p/γw"));
+  C.push(calc("flow-velocity","Pipe/soil flow velocity", "field", "Compute average velocity from flow and area.",[u("Q","Flow rate","m³/s",0.10,0),u("A","Flow area","m²",0.50,0)],v=>outputsFromObject({"Velocity":{value:v.Q/v.A,unit:"m/s"}}),"v=Q/A"));
+  C.push(calc("reynolds-number","Reynolds number", "field", "Classify laminar/transitional/turbulent pipe flow.",[u("rho","Fluid density","kg/m³",1000,0),u("v","Velocity","m/s",0.50,0),u("D","Characteristic diameter","m",0.10,0),u("mu","Dynamic viscosity","Pa·s",0.001,0)],v=>{const Re=v.rho*v.v*v.D/v.mu; return outputsFromObject({"Re":{value:Re,unit:"-"},"Flow cue":{value:Re<2300?"Laminar":Re<4000?"Transitional":"Turbulent",unit:""}});},"Re=ρvD/μ"));
+  C.push(calc("unit-weight-pressure","Pressure from soil column", "field", "Convert a soil column to vertical stress.",[u("gamma","Unit weight","kN/m³",18,0),u("z","Depth","m",10,0)],v=>outputsFromObject({"Stress":{value:v.gamma*v.z,unit:"kPa"}}),"σ=γz"));
+  C.push(calc("geotech-percent-change","Engineering percentage change", "field", "Compute the relative change between two test or design values.",[u("old","Original value", "",100),u("newv","New value","",90)],v=>outputsFromObject({"Change":{value:(v.newv-v.old)/v.old*100,unit:"%"},"Absolute difference":{value:v.newv-v.old,unit:"same units"}}),"% change=(new−old)/old×100"));
+  C.push(calc("soil-layer-average","Layer-weighted average", "field", "Compute the thickness-weighted average of a property across three layers.",[u("p1","Property 1","input units",20,0),u("t1","Thickness 1","m",2,0),u("p2","Property 2","input units",40,0),u("t2","Thickness 2","m",3,0),u("p3","Property 3","input units",60,0),u("t3","Thickness 3","m",5,0)],v=>outputsFromObject({"Weighted average":{value:(v.p1*v.t1+v.p2*v.t2+v.p3*v.t3)/(v.t1+v.t2+v.t3),unit:"input units"}}),"pavg=Σpi ti/Σti"));
+  C.push(calc("dimensionless-conversion","Dimensionless ratio", "field", "Compute a normalized ratio such as water content ratio, OCR-like ratio or stress ratio.",[u("numerator","Numerator", "-",2,0),u("denominator","Denominator","-",5,0)],v=>outputsFromObject({"Ratio":{value:v.numerator/v.denominator,unit:"-"},"Percent":{value:v.numerator/v.denominator*100,unit:"%"}}),"R=a/b"));
+
+  // Add cross-disciplinary geotech helpers to reach a richer toolset.
+  C.push(calc("foundation-embedment-stress","Foundation-level overburden", "shallow", "Estimate overburden stress at foundation base.",[u("gamma","Soil unit weight","kN/m³",18,0),u("Df","Embedment depth","m",1.5,0)],v=>outputsFromObject({"q_overburden":{value:v.gamma*v.Df,unit:"kPa"}}),"q=γDf"));
+  C.push(calc("effective-friction","Friction coefficient from angle", "shear", "Convert a friction angle to an equivalent Coulomb base friction coefficient.",[u("phi","Friction angle","deg",28,0,89)],v=>outputsFromObject({"μ=tanφ":{value:tand(v.phi),unit:"-"}}),"μ=tanφ"));
+  C.push(calc("earth-pressure-depth","Lateral stress from depth", "retaining", "Compute horizontal effective stress at depth for a simple Rankine condition.",[u("gamma","Unit weight","kN/m³",18,0),u("z","Depth","m",4,0),u("Ka","Ka","-",0.333,0),u("q","Uniform surcharge","kPa",10,0)],v=>outputsFromObject({"σh":{value:v.Ka*(v.gamma*v.z+v.q),unit:"kPa"}}),"σh=Ka(γz+q)"));
+  C.push(calc("settlement-total","Total settlement combination", "consolidation", "Sum immediate, primary consolidation and secondary settlement components.",[u("si","Immediate settlement","mm",8,0),u("sc","Primary consolidation","mm",40,0),u("ss","Secondary settlement","mm",6,0)],v=>outputsFromObject({"Total settlement":{value:v.si+v.sc+v.ss,unit:"mm"},"Primary+secondary":{value:v.sc+v.ss,unit:"mm"}}),"st=si+sc+ss"));
+  C.push(calc("settlement-differential","Differential settlement ratio", "consolidation", "Compute differential settlement relative to span length.",[u("dS","Differential settlement","mm",15,0),u("L","Span length","m",6,0)],v=>outputsFromObject({"Δ/L":{value:(v.dS/1000)/v.L,unit:"-"},"Ratio 1:n":{value:v.L/(v.dS/1000),unit:"-"}}),"Δ/L"));
+  C.push(calc("bearing-phi-factors","Bearing capacity factors", "shallow", "Compute Nc, Nq and Nγ for a selected friction angle.",[u("phi","Friction angle","deg",30,0,89)],v=>{const f=bearingFactors(v.phi);return outputsFromObject({"Nc":{value:f.Nc,unit:"-"},"Nq":{value:f.Nq,unit:"-"},"Nγ":{value:f.Ngamma,unit:"-"}});},"Nq=e^(πtanφ)tan²(45+φ/2); Nc=(Nq−1)/tanφ; Nγ≈2(Nq+1)tanφ"));
+  C.push(calc("bearing-depth-factor","Bearing depth factor screen", "shallow", "Simple depth-factor cue for a c-φ soil bearing-capacity equation.",[u("Df","Embedment depth","m",1.5,0),u("B","Footing width","m",2,0),u("phi","Friction angle","deg",30,0,89)],v=>outputsFromObject({"Df/B":{value:v.Df/v.B,unit:"-"},"Approx. depth factor d_q":{value:1+2*tand(v.phi)*(1-Math.sin(rad(v.phi)))**2*(v.Df/v.B),unit:"-"}}),"A simplified screening factor; use the chosen bearing-capacity formulation for final factors."));
+  C.push(calc("bearing-inclined-load","Effective footing width for eccentricity", "shallow", "Compute effective dimensions using Meyerhof-style eccentricity reduction.",[u("B","Actual width B","m",2.5,0),u("L","Actual length L","m",3.5,0),u("ex","Eccentricity ex","m",0.20,0),u("ey","Eccentricity ey","m",0.10,0)],v=>outputsFromObject({"Effective B′":{value:Math.max(0,v.B-2*Math.abs(v.ex)),unit:"m"},"Effective L′":{value:Math.max(0,v.L-2*Math.abs(v.ey)),unit:"m"},"Effective area":{value:Math.max(0,v.B-2*Math.abs(v.ex))*Math.max(0,v.L-2*Math.abs(v.ey)),unit:"m²"}}),"B′=B−2eB; L′=L−2eL"));
+  C.push(calc("pile-volume","Pile concrete volume", "deep", "Compute cylindrical pile concrete volume and mass.",[u("D","Pile diameter","m",0.6,0),u("L","Pile length","m",18,0),u("rho","Concrete density","kg/m³",2400,0),u("n","Number of piles","-",8,1)],v=>{const one=PI*v.D*v.D/4*v.L;return outputsFromObject({"Volume per pile":{value:one,unit:"m³"},"Total volume":{value:one*v.n,unit:"m³"},"Concrete mass":{value:one*v.n*v.rho/1000,unit:"tonnes"}});},"V=nπD²L/4"));
+  C.push(calc("pile-settlement-capacity-ratio","Pile load utilization", "deep", "Compare service pile load with allowable geotechnical resistance.",[u("P","Service pile load","kN",450,0),u("Qallow","Allowable pile resistance","kN",700,0)],v=>outputsFromObject({"Utilization":{value:v.P/v.Qallow*100,unit:"%"},"FS-equivalent":{value:v.Qallow/v.P,unit:"-"}}),"Utilization=P/Qallow"));
+  C.push(calc("spt-energy","SPT hammer energy", "investigation", "Estimate theoretical hammer energy and energy ratio relative to a reference.",[u("W","Hammer mass","kg",63.5,0),u("H","Drop height","m",0.76,0),u("Eref","Reference energy","J",474,0),u("eta","Transfer efficiency","%",60,0)],v=>{const E=v.W*G*v.H;return outputsFromObject({"Theoretical hammer energy":{value:E,unit:"J"},"Delivered estimate":{value:E*v.eta/100,unit:"J"},"Energy ratio":{value:E*v.eta/100/v.Eref*100,unit:"%"}});},"E=Whg"));
+  C.push(calc("cpt-pore-pressure-head","CPT pore pressure head", "investigation", "Convert piezocone pore pressure to equivalent water head.",[u("u","Pore pressure","kPa",120,0),u("gammaW","Water unit weight","kN/m³",9.81,0)],v=>outputsFromObject({"Pressure head":{value:v.u/v.gammaW,unit:"m water"}}),"h=u/γw"));
+  C.push(calc("groundwater-gradient","Groundwater hydraulic gradient", "stress", "Estimate groundwater gradient from water-level differences.",[u("h1","Water level 1","m",12,0),u("h2","Water level 2","m",8,0),u("L","Distance","m",100,0)],v=>outputsFromObject({"Gradient magnitude":{value:Math.abs(v.h1-v.h2)/v.L,unit:"-"}}),"i=|Δh|/L"));
+  C.push(calc("well-pumping-drawdown","Well drawdown screening", "field", "A simple steady radial-flow drawdown estimate for an unconfined/confined aquifer screening case.",[u("Q","Pumping rate","m³/s",0.005,0),u("r","Observation radius","m",20,0),u("rw","Well radius","m",0.15,0),u("k","Hydraulic conductivity","m/s",1e-4,0),u("b","Aquifer thickness","m",20,0)],v=>{const T=v.k*v.b; const s=v.Q/(2*PI*T)*Math.log(v.r/v.rw); return outputsFromObject({"Drawdown s":{value:s,unit:"m"},"Transmissivity T":{value:T,unit:"m²/s"}});},"s≈Q/(2πT) ln(r/rw); screen only"));
+  C.push(calc("well-flow-capacity","Aquifer transmissivity", "field", "Compute transmissivity from hydraulic conductivity and saturated thickness.",[u("k","Hydraulic conductivity","m/s",1e-4,0),u("b","Saturated thickness","m",20,0)],v=>outputsFromObject({"Transmissivity T":{value:v.k*v.b,unit:"m²/s"}}),"T=kb"));
+  C.push(calc("groundwater-storage","Aquifer specific storage volume", "field", "Estimate water volume released from a saturated thickness change using storage coefficient.",[u("S","Storage coefficient","-",0.0001,0),u("A","Aquifer area","m²",100000,0),u("dh","Head change","m",2,0)],v=>outputsFromObject({"Stored/released volume":{value:v.S*v.A*v.dh,unit:"m³"}}),"ΔV=S A Δh"));
+  C.push(calc("soil-suction","Matric suction from capillary head", "stress", "Convert suction head to suction pressure.",[u("hc","Capillary/suction head","m",5,0),u("gammaW","Water unit weight","kN/m³",9.81,0)],v=>outputsFromObject({"Suction":{value:v.hc*v.gammaW,unit:"kPa"}}),"ua−uw≈γwhc"));
+  C.push(calc("capillary-rise","Capillary rise idealized", "stress", "Estimate capillary rise for a simple circular-pore model.",[u("surfaceTension","Water surface tension","N/m",0.072,0),u("theta","Contact angle","deg",0,0,90),u("rhoW","Water density","kg/m³",998,0),u("g","Gravity","m/s²",9.80665,0),u("r","Pore radius","mm",0.01,0)],v=>outputsFromObject({"Capillary rise":{value:2*v.surfaceTension*cosd(v.theta)/(v.rhoW*v.g*(v.r/1000))*1000,unit:"mm"}}),"hc=2γcosθ/(ρgr) - idealized pore model"));
+  C.push(calc("settlement-rate","Average settlement rate", "consolidation", "Compute average settlement rate over a measured interval.",[u("S1","Settlement at t1","mm",10,0),u("S2","Settlement at t2","mm",25,0),u("dt","Time interval","days",120,0)],v=>outputsFromObject({"Average rate":{value:(v.S2-v.S1)/v.dt,unit:"mm/day"}}),"rate=Δs/Δt"));
+  C.push(calc("foundation-settlement-allowance","Settlement utilization", "consolidation", "Compare predicted settlement with an adopted project criterion.",[u("Spred","Predicted settlement","mm",20,0),u("Sallow","Adopted allowable settlement","mm",25,0)],v=>outputsFromObject({"Utilization":{value:v.Spred/v.Sallow*100,unit:"%"},"Margin":{value:v.Sallow-v.Spred,unit:"mm"},"Screen":{value:v.Spred<=v.Sallow?"Within adopted criterion":"Exceeds adopted criterion",unit:""}}),"Utilization=Spred/Sallow"));
+
+  function zToM(z) { return z; }
+
+  // Ensure unique IDs and keep a stable order.
+  const seen = new Set();
+  const TOOLS = C.filter(t => {
+    if (seen.has(t.id)) return false;
+    seen.add(t.id);
+    return true;
+  });
+
+  function categoryName(id) {
+    return categories.find(c => c.id === id)?.name || id;
+  }
+
+  function filteredTools() {
+    const q = ($("search").value || "").trim().toLowerCase();
+    return TOOLS.filter(t => {
+      const catOK = state.category === "all" || t.category === state.category;
+      if (!catOK) return false;
+      if (!q) return true;
+      return `${t.title} ${t.description} ${t.category} ${t.formula} ${t.notes}`.toLowerCase().includes(q);
+    });
+  }
+
+  function renderCategories() {
+    const box = $("categories");
+    box.replaceChildren();
+    categories.forEach(c => {
+      const count = c.id === "all" ? TOOLS.length : TOOLS.filter(t => t.category === c.id).length;
+      const b = document.createElement("button");
+      b.className = `category-btn ${state.category === c.id ? "on" : ""}`;
+      b.type = "button";
+      b.innerHTML = "";
+      const left = document.createElement("span");
+      left.textContent = c.name;
+      const right = document.createElement("span");
+      right.className = "count";
+      right.textContent = count;
+      b.append(left, right);
+      b.onclick = () => {
+        state.category = c.id;
+        const available = filteredTools();
+        state.selected = available[0]?.id || "";
+        renderCategories();
+        renderSelect();
+        renderCalculator();
+      };
+      box.appendChild(b);
+    });
+  }
+
+  function renderSelect() {
+    const select = $("calculatorSelect");
+    select.replaceChildren();
+    const tools = filteredTools();
+    tools.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t.id;
+      opt.textContent = `${t.title} - ${categoryName(t.category)}`;
+      select.appendChild(opt);
+    });
+    if (!tools.some(t => t.id === state.selected)) state.selected = tools[0]?.id || "";
+    select.value = state.selected;
+    select.disabled = !tools.length;
+  }
+
+  function renderCalculator() {
+    const box = $("calculator");
+    box.replaceChildren();
+    const tool = TOOLS.find(t => t.id === state.selected);
+    if (!tool) {
+      const p = document.createElement("p");
+      p.className = "small";
+      p.textContent = "No calculator matches the current filter.";
+      box.appendChild(p);
+      return;
+    }
+
+    const title = document.createElement("h2");
+    title.textContent = tool.title;
+    const desc = document.createElement("p");
+    desc.className = "small";
+    desc.textContent = tool.description;
+    box.append(title, desc);
+
+    const grid = document.createElement("div");
+    grid.className = "input-grid";
+
+    tool.inputs.forEach(spec => {
+      const wrap = document.createElement("div");
+      wrap.className = "field";
+      const label = document.createElement("label");
+      label.setAttribute("for", `inp-${spec.key}`);
+      label.textContent = `${spec.label}${spec.unit ? ` (${spec.unit})` : ""}`;
+      const input = document.createElement("input");
+      input.id = `inp-${spec.key}`;
+      input.type = "number";
+      input.step = spec.step;
+      input.value = state.inputs[`${tool.id}:${spec.key}`] ?? spec.def;
+      if (spec.min !== null) input.min = spec.min;
+      if (spec.max !== null) input.max = spec.max;
+      input.addEventListener("input", () => {
+        state.inputs[`${tool.id}:${spec.key}`] = input.value;
+        calculateCurrent();
+      });
+      wrap.append(label, input);
+      grid.appendChild(wrap);
+    });
+
+    const buttonRow = document.createElement("div");
+    buttonRow.className = "actions";
+    buttonRow.style.marginTop = "13px";
+    const run = document.createElement("button");
+    run.className = "btn accent";
+    run.textContent = "Calculate";
+    run.onclick = calculateCurrent;
+    const loadDefaults = document.createElement("button");
+    loadDefaults.className = "btn secondary";
+    loadDefaults.textContent = "Defaults";
+    loadDefaults.onclick = () => {
+      tool.inputs.forEach(s => state.inputs[`${tool.id}:${s.key}`] = s.def);
+      renderCalculator();
+      calculateCurrent();
+    };
+    buttonRow.append(run, loadDefaults);
+    box.appendChild(grid);
+    box.appendChild(buttonRow);
+
+    const resultWrap = document.createElement("div");
+    resultWrap.id = "resultWrap";
+    resultWrap.className = "result-grid";
+    box.appendChild(resultWrap);
+
+    if (tool.formula) {
+      const f = document.createElement("div");
+      f.className = "formula";
+      f.textContent = tool.formula;
+      box.appendChild(f);
+    }
+    if (tool.notes) {
+      const n = document.createElement("div");
+      n.className = "notes";
+      n.textContent = tool.notes;
+      box.appendChild(n);
+    }
+
+    calculateCurrent();
+  }
+
+  function calculateCurrent() {
+    const tool = TOOLS.find(t => t.id === state.selected);
+    if (!tool) return;
+    const values = {};
+    for (const spec of tool.inputs) {
+      const el = $(`inp-${spec.key}`);
+      values[spec.key] = safeNum(el?.value, spec.def);
+    }
+    const target = $("resultWrap");
+    if (!target) return;
+    target.replaceChildren();
+    try {
+      const result = tool.compute(values);
+      const outs = result?.outputs || [];
+      state.lastText = [tool.title, ...outs.map(o => `${o.label}: ${fmt(o.value, o.unit)}`), tool.formula ? `Formula: ${tool.formula}` : ""].filter(Boolean).join("\n");
+      outs.forEach(o => {
+        const card = document.createElement("div");
+        card.className = "result";
+        const lab = document.createElement("div");
+        lab.className = "label";
+        lab.textContent = o.label;
+        const val = document.createElement("div");
+        val.className = "value";
+        val.textContent = typeof o.value === "string" ? o.value : fmt(o.value, o.unit);
+        card.append(lab, val);
+        target.appendChild(card);
+      });
+    } catch (err) {
+      const card = document.createElement("div");
+      card.className = "result bad";
+      card.style.gridColumn = "1 / -1";
+      const lab = document.createElement("div");
+      lab.className = "label";
+      lab.textContent = "Input check";
+      const val = document.createElement("div");
+      val.className = "value";
+      val.textContent = err?.message || "Invalid input.";
+      card.append(lab, val);
+      target.appendChild(card);
+      state.lastText = `${tool.title}\nError: ${err?.message || "Invalid input."}`;
+    }
+  }
+
+  function toast(message, type = "ok") {
+    const el = document.createElement("div");
+    el.className = `toast ${type}`;
+    el.textContent = message;
+    $("toasts").appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  function saveProject() {
+    try {
+      localStorage.setItem("aznur-geotech-project", JSON.stringify({
+        projectName: $("projectName").value,
+        engineerName: $("engineerName").value,
+        reportNote: $("reportNote").value
+      }));
+      toast("Project details saved locally.");
+    } catch { /* local storage may be unavailable */ }
+  }
+
+  function loadProject() {
+    try {
+      const p = JSON.parse(localStorage.getItem("aznur-geotech-project") || "{}");
+      $("projectName").value = p.projectName || "";
+      $("engineerName").value = p.engineerName || "";
+      $("reportNote").value = p.reportNote || "";
+    } catch { /* ignore */ }
+  }
+
+  function resetCurrentInputs() {
+    const tool = TOOLS.find(t => t.id === state.selected);
+    if (!tool) return;
+    tool.inputs.forEach(s => delete state.inputs[`${tool.id}:${s.key}`]);
+    renderCalculator();
+    toast("Calculator inputs reset.");
+  }
+
+  $("calculatorSelect").addEventListener("change", e => {
+    state.selected = e.target.value;
+    renderCalculator();
+  });
+
+  $("search").addEventListener("input", () => {
+    const tools = filteredTools();
+    state.selected = tools[0]?.id || "";
+    renderSelect();
+    renderCalculator();
+  });
+
+  $("copyResult").onclick = async () => {
+    if (!state.lastText) { toast("Calculate something first.", "warn"); return; }
+    try {
+      await navigator.clipboard.writeText(state.lastText);
+      toast("Result copied.");
+    } catch {
+      toast("Clipboard access is unavailable in this browser.", "warn");
+    }
+  };
+
+  $("print").onclick = () => window.print();
+  $("resetSettings").onclick = resetCurrentInputs;
+  ["projectName", "engineerName", "reportNote"].forEach(id => $(id).addEventListener("change", saveProject));
+
+  // Lightweight self-checks: equations with known expected outputs.
+  function runSelfTests() {
+    const tests = [
+      ["water-content", ({mw,ms}) => mw/ms*100, {mw:20,ms:100}, 20],
+      ["void-ratio-porosity", ({e}) => e/(1+e)*100, {e:1}, 50],
+      ["plasticity-index", ({LL,PL}) => LL-PL, {LL:45,PL:20}, 25],
+      ["gradation-cu-cc", ({D10,D60}) => D60/D10, {D10:0.2,D30:0.45,D60:1.2}, 6],
+      ["relative-compaction", ({rhoField,rhoMax}) => rhoField/rhoMax*100, {rhoField:1800,rhoMax:2000}, 90],
+      ["effective-stress", ({sigmaV,u}) => sigmaV-u, {sigmaV:200,u:80}, 120],
+      ["mohr-coulomb", ({c,sigma,phi}) => c+sigma*tand(phi), {c:10,sigma:100,phi:30}, 67.735],
+      ["bearing-allowable", ({qu,FS}) => qu/FS, {qu:300,FS:3}, 100],
+      ["footing-area-bearing", ({P,qallow}) => P/qallow, {P:1000,qallow:200}, 5],
+      ["pile-ultimate-total", ({Qb,Qs}) => Qb+Qs, {Qb:300,Qs:700}, 1000],
+      ["rankine-active", ({phi}) => Math.tan(rad(45-phi/2))**2, {phi:30}, 1/3],
+      ["darcy-flow", ({k,i,A}) => k*i*A, {k:1e-5,i:0.2,A:4}, 8e-6],
+      ["ocr", ({sigmap,sigma0}) => sigmap/sigma0, {sigmap:180,sigma0:90}, 2],
+      ["rock-rqd", ({Llong,Lrun}) => Llong/Lrun*100, {Llong:8,Lrun:10}, 80],
+      ["cpt-friction-ratio", ({qc,fs}) => fs/(qc*1000)*100, {qc:10,fs:100}, 1],
+    ];
+    let pass = 0;
+    for (const [id, fn, args, expected] of tests) {
+      try {
+        const got = fn(args);
+        if (Math.abs(got-expected) <= Math.max(1e-9,Math.abs(expected)*1e-4)) pass++;
+      } catch { /* fail */ }
+    }
+    window.__AZNUR_GEOTECH_SELFTEST__ = { pass, total: tests.length, tools: TOOLS.length };
+    return window.__AZNUR_GEOTECH_SELFTEST__;
+  }
+
+  renderCategories();
+  state.selected = TOOLS[0]?.id || "";
+  loadProject();
+  renderSelect();
+  renderCalculator();
+  runSelfTests();
+
+  window.AznurGeotech = Object.freeze({
+    tools: TOOLS.map(t => ({ id: t.id, title: t.title, category: t.category })),
+    selfTest: runSelfTests
+  });
+})();
+</script>
+</body>
+</html>

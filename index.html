@@ -1,288 +1,500 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Aznur Civil Studio - Geotechnical Engineering toolbox for soil mechanics, site investigation, foundations, slopes, retaining walls, piles, earthwork and geotechnical calculations.">
-<meta name="theme-color" content="#fafafa">
-<title>Aznur Civil Studio - Geotechnical Engineering</title>
+<meta name="theme-color" content="#fdfcfc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161313" media="(prefers-color-scheme: dark)">
+<title>Geotechnical Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #fafafa;
-  --surface: #ffffff;
-  --surface-2: #f5f5f4;
-  --border: #e7e5e4;
-  --text: #1c1917;
-  --muted: #57534e;
-  --accent: #f59e0b;
-  --accent-hover: #d97706;
-  --success: #10b981;
-  --error: #ef4444;
-  --info: #3b82f6;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  color-scheme: light dark;
+  --bg: #fdfcfc; --fg: #201d1d; --dim: #646262; --faint: #9a9898;
+  --line: #dcd9d9; --accent: #b45309; --accent-fg: #fdfcfc;
+  --active: #f4f0ef; --surface: #faf8f7;
+  --font: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --radius: 4px;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #161313; --fg: #f1eeee; --dim: #9a9898; --faint: #646262;
+  --line: #302c2c; --accent: #f59e0b; --accent-fg: #161313;
+  --active: #211d1d; --surface: #1c1818;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #161313; --fg: #f1eeee; --dim: #9a9898; --faint: #646262;
+    --line: #302c2c; --accent: #f59e0b; --accent-fg: #161313;
+    --active: #211d1d; --surface: #1c1818;
+  }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font);
+  font-size: 13.5px;
+  line-height: 1.55;
   background: var(--bg);
-  color: var(--text);
-  line-height: 1.5;
+  color: var(--fg);
 }
 button, input, select, textarea { font: inherit; }
-button { border: 0; }
-button:focus-visible, input:focus, select:focus, textarea:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-}
+button { border: 0; background: none; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.container { max-width: 1180px; margin: 0 auto; padding: 34px 18px 60px; }
-header { margin-bottom: 22px; text-align: center; }
-h1 { margin: 0 0 8px; font-size: clamp(2rem, 4vw, 3rem); }
-.subtitle { max-width: 820px; margin: 0 auto; color: var(--muted); }
+.wrap { max-width: 74rem; margin: 0 auto; padding: 0 1.1rem; }
 
+/* Topbar */
 .topbar {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
-  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 40;
 }
-.searchbox {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 54px;
+  flex-wrap: wrap;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
 }
-.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.brand {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--fg);
+  text-decoration: none;
+}
+.brand .slash { color: var(--faint); margin: 0 .1em; }
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  flex-wrap: wrap;
+}
+.selftest {
+  font-size: 10.5px;
+  color: var(--dim);
+  padding: .25rem .5rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.selftest .mark { color: var(--accent); font-weight: 600; }
 
+/* Header */
+.eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 .5rem;
+}
+header.page-head { padding: 2rem 0 1rem; }
+h1 {
+  margin: 0 0 .5rem;
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -.02em;
+  line-height: 1.15;
+}
+.subtitle {
+  max-width: 52rem;
+  margin: 0;
+  color: var(--dim);
+  font-size: 12.5px;
+}
+
+/* Cards */
 .card {
-  margin-bottom: 18px;
-  padding: 20px;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
+  margin-bottom: .85rem;
 }
 
-.notice {
-  padding: 13px 15px;
-  margin-bottom: 18px;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
-  border-radius: var(--radius);
-  color: #78350f;
-  font-size: .84rem;
+.warning {
+  background: var(--active);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  padding: .55rem .75rem;
+  color: var(--dim);
+  font-size: 11.5px;
+  margin-bottom: .85rem;
 }
-.notice strong { color: #451a03; }
+.warning::before {
+  content: '[!] ';
+  color: var(--accent);
+  font-weight: 600;
+}
 
+/* Layout */
 .layout {
   display: grid;
-  grid-template-columns: 290px minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 1rem;
   align-items: start;
 }
-.sidebar { position: sticky; top: 14px; }
-.category-list { display: grid; gap: 7px; max-height: 70vh; overflow: auto; }
+.sidebar { position: sticky; top: 74px; }
+.sidebar .card { padding: .9rem; }
+
+.category-list { display: grid; gap: 2px; max-height: 65vh; overflow: auto; }
 .category-btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: .5rem;
   width: 100%;
-  padding: 10px 11px;
+  padding: .5rem .6rem;
   text-align: left;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-left: 2px solid transparent;
+  border-radius: 3px;
+  color: var(--dim);
+  font-size: 12px;
+  min-height: 32px;
 }
-.category-btn:hover { background: var(--surface-2); }
-.category-btn.on { background: #fffbeb; border-color: var(--accent); }
+.category-btn:hover { color: var(--fg); background: var(--active); }
+.category-btn.on {
+  color: var(--fg);
+  background: var(--surface);
+  border-left: 2px solid var(--accent);
+  padding-left: .6rem;
+}
 .count {
-  min-width: 25px;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--muted);
-  font-size: .7rem;
+  min-width: 24px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--active);
+  color: var(--dim);
+  font-size: 10px;
   text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.category-btn.on .count { color: var(--accent); }
+
+/* Search wrapper */
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .25rem .55rem;
+  min-height: 34px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  margin-bottom: .65rem;
+}
+.search-wrap .prompt { color: var(--accent); font-weight: 600; font-size: 13px; }
+.search-wrap input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--fg);
+  font: inherit;
+  font-size: 12.5px;
+}
+.search-wrap input:focus { outline: none; }
+.search-wrap:focus-within {
+  border-color: var(--accent);
+  outline: 1px solid var(--accent);
+  outline-offset: 0;
 }
 
-.tool-select { margin-bottom: 14px; }
+kbd {
+  font: inherit;
+  font-size: 10.5px;
+  padding: .05rem .35rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--active);
+  color: var(--dim);
+}
+
+.tool-select { margin-bottom: .9rem; }
 .tool-select select {
   width: 100%;
-  padding: 11px;
+  min-height: 34px;
+  padding: .35rem .55rem;
   background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
+  color: var(--fg);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
+  font: inherit;
+  font-size: 12.5px;
 }
+.tool-select select:hover { border-color: var(--accent); }
 
-h2, h3, h4 { line-height: 1.2; }
-h2 { margin: 0 0 7px; }
-h3 { margin: 0 0 7px; }
-.small { font-size: .82rem; color: var(--muted); }
+h2 { margin: 0 0 .35rem; font-size: 1.05rem; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
+h3 { margin: 0 0 .5rem; font-size: .95rem; font-weight: 600; letter-spacing: -.01em; }
+.small { font-size: 11.5px; color: var(--dim); }
 
+/* Inputs */
 .input-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: .65rem;
+  margin-top: .75rem;
 }
-.field { display: flex; flex-direction: column; gap: 6px; }
-.field label { font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.field { display: flex; flex-direction: column; gap: .3rem; }
+.field label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--dim);
+}
 .field input, .field select, .field textarea {
   width: 100%;
-  padding: 9px 10px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  min-height: 34px;
+  padding: .35rem .55rem;
   background: var(--surface);
-  color: var(--text);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
 }
+.field input:hover, .field select:hover, .field textarea:hover { border-color: var(--accent); }
 .field textarea { min-height: 82px; resize: vertical; }
-.field .hint { font-size: .72rem; color: var(--muted); }
 
+/* Results */
 .result-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 9px;
-  margin-top: 14px;
+  gap: .5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  margin-top: .75rem;
 }
 .result {
-  padding: 12px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
+  background: var(--active);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
+  padding: .5rem .65rem;
+  min-height: 64px;
 }
-.result .label { color: var(--muted); font-size: .7rem; font-weight: 700; text-transform: uppercase; }
-.result .value { margin-top: 3px; font-size: 1.08rem; font-weight: 700; word-break: break-word; }
-.result.good .value { color: #047857; }
-.result.warn .value { color: #b45309; }
-.result.bad .value { color: #b91c1c; }
+.result .label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--dim);
+  font-weight: 600;
+}
+.result .value {
+  margin-top: .15rem;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}
+.result.good .value { color: var(--fg); }
+.result.warn { border-color: var(--accent); }
+.result.warn .value { color: var(--accent); }
+.result.bad { border-color: var(--accent); border-style: dashed; }
+.result.bad .value { color: var(--accent); font-weight: 500; }
 
 .formula {
-  margin-top: 14px;
-  padding: 10px 12px;
+  margin-top: .75rem;
+  padding: .55rem .7rem;
   border-left: 3px solid var(--accent);
-  background: #fffbeb;
-  color: #713f12;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: .78rem;
+  background: var(--active);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: 11.5px;
   overflow-x: auto;
 }
 .notes {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  color: var(--muted);
-  font-size: .78rem;
+  margin-top: .75rem;
+  padding-top: .75rem;
+  border-top: 1px dashed var(--line);
+  color: var(--dim);
+  font-size: 11px;
 }
 
+/* Buttons */
 .btn {
-  padding: 9px 14px;
-  background: var(--text);
-  color: #fff;
-  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: .3rem .85rem;
+  font: inherit;
+  font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-decoration: none;
 }
-.btn:hover { background: #333; }
-.btn.secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
-.btn.secondary:hover { background: var(--surface-2); }
-.btn.accent { background: var(--accent); }
-.btn.accent:hover { background: var(--accent-hover); }
-.btn.sm { padding: 6px 10px; font-size: .8rem; }
+.btn:hover { border-color: var(--accent); }
+.btn.accent {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.btn.secondary { background: var(--surface); }
+.btn.sm { min-height: 28px; padding: .2rem .55rem; font-size: 11.5px; }
+.actions { display: flex; gap: .4rem; flex-wrap: wrap; }
 
+/* Project row */
 .project-row {
   display: grid;
   grid-template-columns: 1.2fr 1fr 1fr;
-  gap: 10px;
+  gap: .55rem;
 }
-.project-row input { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: var(--radius); }
-
-.ref-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
-.ref {
-  padding: 12px;
-  border: 1px solid var(--border);
+.project-row input {
+  width: 100%;
+  min-height: 34px;
+  padding: .35rem .55rem;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface-2);
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 12.5px;
 }
-.ref b { display: block; margin-bottom: 4px; }
-.ref a { color: #1d4ed8; word-break: break-word; font-size: .8rem; }
+.project-row input:hover { border-color: var(--accent); }
+
+/* Reference grid */
+.ref-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .55rem;
+  margin-top: .75rem;
+}
+.ref {
+  padding: .7rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.ref b { display: block; margin-bottom: .25rem; font-size: 12px; font-weight: 600; }
+.ref .small { font-size: 11px; }
 
 footer {
-  margin-top: 26px;
-  padding-top: 18px;
-  border-top: 1px solid var(--border);
-  color: var(--muted);
-  font-size: .78rem;
+  margin-top: 2rem;
+  padding: 1.25rem 0 2rem;
+  border-top: 1px dashed var(--line);
+  color: var(--dim);
+  font-size: 11px;
   text-align: center;
 }
+footer p { margin: .35rem 0; }
 
+/* Toasts */
 #toasts {
   position: fixed;
-  right: 14px;
-  top: 14px;
-  z-index: 50;
+  top: 1rem;
+  right: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: min(360px, calc(100vw - 28px));
+  gap: .4rem;
+  width: min(340px, calc(100vw - 2rem));
+  z-index: 1000;
+  pointer-events: none;
 }
-.toast { padding: 10px 13px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--success); border-radius: var(--radius); box-shadow: 0 4px 12px #0002; font-size: .82rem; }
-.toast.err { border-left-color: var(--error); }
-.toast.warn { border-left-color: var(--accent); }
+.toast {
+  display: flex;
+  gap: .5rem;
+  padding: .5rem .65rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  pointer-events: auto;
+  align-items: flex-start;
+}
+.toast-mark { color: var(--accent); font-weight: 600; flex-shrink: 0; }
+.toast.err { border-left-style: dashed; }
 
 .hidden { display: none !important; }
+
 @media (max-width: 860px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar { position: static; }
-  .category-list { max-height: none; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .category-list {
+    max-height: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 @media (max-width: 650px) {
-  .topbar, .project-row, .input-grid, .result-grid, .ref-grid { grid-template-columns: 1fr; }
+  .project-row, .input-grid, .ref-grid { grid-template-columns: 1fr; }
   .category-list { grid-template-columns: 1fr; }
-  .container { padding: 24px 12px 45px; }
+  .topbar-inner { min-height: auto; padding: .5rem 0; }
+  .wrap { padding: 0 .75rem; }
+  .selftest { display: none; }
+  .brand { font-size: 13.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 @media print {
-  .topbar, .sidebar, .actions, .tool-select { display: none !important; }
+  .topbar, .sidebar, .search-wrap, .tool-select, .actions { display: none !important; }
   .layout { display: block; }
-  .card { box-shadow: none; break-inside: avoid; }
+  .card { box-shadow: none; break-inside: avoid; border-color: #999; }
+  body { font-size: 11pt; }
 }
 </style>
 </head>
 <body>
-<div id="toasts"></div>
-<div class="container">
-  <header>
-    <h1>Aznur Civil Studio - Geotechnical Engineering</h1>
+<div id="toasts" aria-live="polite"></div>
+
+<div class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#">aznur<span class="slash">/</span>geotechnical</a>
+    <div class="topbar-actions">
+      <select id="themeSelect" class="btn sm secondary" aria-label="Theme">
+        <option value="auto">auto</option>
+        <option value="light">light</option>
+        <option value="dark">dark</option>
+      </select>
+      <span class="selftest" id="selfTestBadge"></span>
+      <button class="btn sm secondary" id="copyResult">Copy</button>
+      <button class="btn sm secondary" id="print">Print</button>
+      <button class="btn sm secondary" id="resetSettings">Reset inputs</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="page-head">
+    <p class="eyebrow">Fig 1. Geotechnical toolbox</p>
+    <h1>Aznur Civil Studio — Geotechnical Engineering</h1>
     <p class="subtitle">
       Soil mechanics, site investigation, foundations, retaining structures, slopes,
       piles, earthwork, ground improvement and geotechnical reference calculations.
     </p>
   </header>
 
-  <div class="notice">
-    <strong>Engineering-use warning:</strong>
-    This studio is a calculation and learning aid. Geotechnical behavior is highly
-    site-specific. Final design must use verified field/laboratory data, groundwater
-    conditions, structural loads, applicable project specifications and the governing code.
-    Do not use a screening calculation as a substitute for a geotechnical report or
-    professional design review.
-  </div>
-
-  <div class="topbar">
-    <input id="search" class="searchbox" type="search" placeholder="Search calculators: SPT, bearing capacity, consolidation, pile, slope, CPT…" autocomplete="off">
-    <div class="actions">
-      <button class="btn secondary" id="copyResult">Copy Result</button>
-      <button class="btn secondary" id="print">Print / PDF</button>
-      <button class="btn secondary" id="resetSettings">Reset Inputs</button>
-    </div>
+  <div class="warning">
+    Engineering-use warning: This studio is a calculation and learning aid. Geotechnical
+    behavior is highly site-specific. Final design must use verified field/laboratory data,
+    groundwater conditions, structural loads, applicable project specifications and the
+    governing code. Do not use a screening calculation as a substitute for a geotechnical
+    report or professional design review.
   </div>
 
   <div class="card">
@@ -291,20 +503,25 @@ footer {
       <div><input id="engineerName" placeholder="Engineer / Student"></div>
       <div><input id="reportNote" placeholder="Short note"></div>
     </div>
-    <div class="small" style="margin-top:8px">Project information is stored only in this browser.</div>
+    <div class="small" style="margin-top:.5rem">Project information is stored only in this browser.</div>
   </div>
 
   <div class="layout">
     <aside class="sidebar">
       <div class="card">
-        <h3>Categories</h3>
+        <p class="eyebrow">Categories</p>
         <div id="categories" class="category-list"></div>
       </div>
     </aside>
 
     <main>
       <div class="card">
-        <h3>Calculator</h3>
+        <p class="eyebrow">Fig 2. Calculator</p>
+        <label class="search-wrap">
+          <span class="prompt">&gt;</span>
+          <input id="search" type="search" placeholder="Filter calculators: SPT, bearing, pile, slope, CPT…" autocomplete="off">
+          <kbd>/</kbd>
+        </label>
         <div class="tool-select">
           <select id="calculatorSelect" aria-label="Choose geotechnical calculator"></select>
         </div>
@@ -312,13 +529,14 @@ footer {
       </div>
 
       <section class="card">
-        <h3>Reference & field guidance</h3>
+        <p class="eyebrow">Fig 3. Reference</p>
+        <h3>Reference &amp; field guidance</h3>
         <p class="small">
           The studio groups common geotechnical relationships and screening methods. Use the governing project code and the actual investigation data for design decisions.
         </p>
-        <div class="ref-grid" style="margin-top:12px">
+        <div class="ref-grid">
           <div class="ref">
-            <b>Bangladesh - BNBC 2020</b>
+            <b>Bangladesh — BNBC 2020</b>
             <div class="small">Part 6 includes soils and foundations and is the primary local building-code reference to check for Bangladesh projects.</div>
           </div>
           <div class="ref">
@@ -326,7 +544,7 @@ footer {
             <div class="small">EN 1997 covers geotechnical design and ground investigation as Parts 1 and 2.</div>
           </div>
           <div class="ref">
-            <b>USACE - Geotechnical</b>
+            <b>USACE — Geotechnical</b>
             <div class="small">Useful engineering manuals cover bearing capacity, settlement, investigations and foundation practice.</div>
           </div>
           <div class="ref">
@@ -337,7 +555,7 @@ footer {
       </section>
 
       <footer>
-        <p>Aznur Civil Studio - Geotechnical Engineering. Local calculation only; no data is uploaded by this page.</p>
+        <p>Aznur Civil Studio — Geotechnical Engineering. Local calculation only; no data is uploaded by this page.</p>
         <p>Values are presented with engineering context and assumptions. Verify units, soil model, code provisions and project-specific parameters before use.</p>
       </footer>
     </main>
@@ -504,7 +722,7 @@ footer {
   C.push(calc("gradation-dvalue-log", "Interpolate D-value on semi-log gradation curve", "gradation", "Estimate D10/D30/D60 between two adjacent points using logarithmic particle-size interpolation.", [u("P1", "Percent passing at lower D", "%",20,0,100), u("P2", "Percent passing at upper D", "%",40,0,100), u("D1", "Lower particle size", "mm",0.30,0), u("D2", "Upper particle size", "mm",0.80,0), u("Ptarget", "Target percent passing", "%",30,0,100)], v => { positive("D1",v.D1); positive("D2",v.D2); if(v.P2===v.P1) throw new Error("P1 and P2 must differ."); const x=(v.Ptarget-v.P1)/(v.P2-v.P1); const D=Math.exp(Math.log(v.D1)+x*(Math.log(v.D2)-Math.log(v.D1))); return outputsFromObject({ "Interpolated D": {value:D,unit:"mm"}, "Interpolation fraction": {value:x,unit:"-"}}); }, "log D = log D1 + [(P−P1)/(P2−P1)](log D2−log D1)"));
   C.push(calc("sieve-sample-mass", "Minimum sieve sample estimate", "gradation", "Screen a sample mass based on nominal largest particle size.", [u("Dmax", "Largest particle size", "mm",9.5,0), u("massPerMm", "Sample mass factor", "g/mm",25,0)], v => outputsFromObject({ "Suggested sample mass": {value:v.Dmax*v.massPerMm,unit:"g"}, "Equivalent": {value:v.Dmax*v.massPerMm/1000,unit:"kg"}}), "Project-lab screening heuristic; follow the applicable test standard for the actual sample mass."));
   C.push(calc("hydrometer-stokes", "Hydrometer settling particle size", "gradation", "Estimate equivalent particle diameter using Stokes' law.", [u("mu", "Dynamic viscosity μ", "Pa·s",0.001,0), u("L", "Effective depth L", "m",0.10,0), u("rhoS", "Particle density", "kg/m³",2650,0), u("rhoW", "Water density", "kg/m³",998,0), u("t", "Settling time", "s",3600,0)], v => { positive("rhoS−rhoW",v.rhoS-v.rhoW); const D=Math.sqrt(18*v.mu*v.L/(G*(v.rhoS-v.rhoW)*v.t)); return outputsFromObject({ "Equivalent D": {value:D*1000,unit:"mm"}}); }, "D = √[18μL/(g(ρs−ρw)t)]"));
-  C.push(calc("d10-permeability-indirect", "Haz​en permeability estimate", "gradation", "Estimate k from D10 for clean, relatively uniform sands using a simple empirical relation.", [u("D10", "D10", "mm",0.25,0), u("factor", "Coefficient A", "1/(s·mm²)",0.01,0)], v => outputsFromObject({ "Estimated k": {value:v.factor*v.D10*v.D10*1e-3,unit:"m/s"}}), "k ≈ A·D10² (empirical; calibration is project/lab specific)"));
+  C.push(calc("d10-permeability-indirect", "Hazen permeability estimate", "gradation", "Estimate k from D10 for clean, relatively uniform sands using a simple empirical relation.", [u("D10", "D10", "mm",0.25,0), u("factor", "Coefficient A", "1/(s·mm²)",0.01,0)], v => outputsFromObject({ "Estimated k": {value:v.factor*v.D10*v.D10*1e-3,unit:"m/s"}}), "k ≈ A·D10² (empirical; calibration is project/lab specific)"));
   C.push(calc("gradation-curves", "Gradation statistics", "gradation", "Compute mean size, sorting and simple coarse/fine proportions from D-values.", [u("D10","D10","mm",0.20,0),u("D30","D30","mm",0.45,0),u("D50","D50","mm",0.70,0),u("D60","D60","mm",1.20,0)], v => outputsFromObject({ "D50":{value:v.D50,unit:"mm"}, "Cu":{value:v.D60/v.D10,unit:"-"}, "D30²/(D10D60)":{value:v.D30*v.D30/(v.D10*v.D60),unit:"-"}, "Log midpoint √(D10D60)":{value:Math.sqrt(v.D10*v.D60),unit:"mm"} }), "Common gradation descriptors use D-values and their logarithms."));
   C.push(calc("percent-fines-mass", "Fines percentage from wash test", "gradation", "Compute fines lost during washing relative to the original dry mass.", [u("Mbefore","Mass before wash","g",500,0),u("Mafter","Mass after wash","g",460,0)], v => outputsFromObject({ "Fines":{value:(v.Mbefore-v.Mafter)/v.Mbefore*100,unit:"%"}, "Mass lost":{value:v.Mbefore-v.Mafter,unit:"g"}}), "% fines = (Mbefore−Mafter)/Mbefore"));
   C.push(calc("specific-surface", "Approximate specific surface from particle size", "gradation", "Screen an idealized specific-surface estimate for spherical particles.", [u("rhoS","Particle density","kg/m³",2650,0),u("D","Representative diameter","mm",0.5,0)], v => outputsFromObject({ "Specific surface":{value:6/(v.rhoS*(v.D/1000)),unit:"m²/kg"}}), "SSA ≈ 6/(ρsD) for ideal spheres"));
@@ -886,7 +1104,12 @@ footer {
   function toast(message, type = "ok") {
     const el = document.createElement("div");
     el.className = `toast ${type}`;
-    el.textContent = message;
+    const mark = document.createElement("span");
+    mark.className = "toast-mark";
+    mark.textContent = type === "err" ? "[x]" : type === "warn" ? "[!]" : "[*]";
+    const txt = document.createElement("span");
+    txt.textContent = message;
+    el.append(mark, txt);
     $("toasts").appendChild(el);
     setTimeout(() => el.remove(), 3500);
   }
@@ -917,6 +1140,52 @@ footer {
     tool.inputs.forEach(s => delete state.inputs[`${tool.id}:${s.key}`]);
     renderCalculator();
     toast("Calculator inputs reset.");
+  }
+
+  // --- Theme selector ---
+  function applyTheme(v) {
+    if (v === "auto") {
+      delete document.documentElement.dataset.theme;
+    } else {
+      document.documentElement.dataset.theme = v;
+    }
+  }
+  function initTheme() {
+    const sel = $("themeSelect");
+    let saved = "auto";
+    try { saved = localStorage.getItem("aznur-theme") || "auto"; } catch {}
+    sel.value = saved;
+    applyTheme(saved);
+    sel.addEventListener("change", () => {
+      applyTheme(sel.value);
+      try { localStorage.setItem("aznur-theme", sel.value); } catch {}
+    });
+  }
+
+  // --- Keyboard shortcuts ---
+  function initKeyboard() {
+    document.addEventListener("keydown", (e) => {
+      const tag = (e.target.tagName || "").toUpperCase();
+      const inField = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+      if (e.key === "/" && !inField) {
+        e.preventDefault();
+        $("search").focus();
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        $("search").focus();
+        return;
+      }
+      if (e.key === "Escape" && document.activeElement === $("search")) {
+        $("search").value = "";
+        $("search").blur();
+        const tools = filteredTools();
+        state.selected = tools[0]?.id || "";
+        renderSelect();
+        renderCalculator();
+      }
+    });
   }
 
   $("calculatorSelect").addEventListener("change", e => {
@@ -981,6 +1250,19 @@ footer {
   renderSelect();
   renderCalculator();
   runSelfTests();
+  initTheme();
+  initKeyboard();
+
+  // Surface self-test result in the topbar badge.
+  const st = window.__AZNUR_GEOTECH_SELFTEST__;
+  if (st) {
+    const badge = $("selfTestBadge");
+    badge.replaceChildren();
+    const mk = document.createElement("span");
+    mk.className = "mark";
+    mk.textContent = "[*]";
+    badge.append(mk, document.createTextNode(` ${st.pass}/${st.total} self-tests`));
+  }
 
   window.AznurGeotech = Object.freeze({
     tools: TOOLS.map(t => ({ id: t.id, title: t.title, category: t.category })),
